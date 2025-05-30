@@ -27,3 +27,6 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
+// Next.js App Routerでは、appディレクトリ直下にloading.jsxを置くことで
+// すべてのページで自動的にローディングUIが表示されます。
