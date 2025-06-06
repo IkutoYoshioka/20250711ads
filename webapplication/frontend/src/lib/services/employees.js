@@ -1,52 +1,6 @@
 import api from '@/lib/api';
+import { mockUsers } from '@/mock_data/mockUsers';
 
-// モックユーザーデータ
-const mockUsers = [
-  {
-    // 一般考課者
-    employeeId: '12345',
-    employeeCode: 'E12345',
-    lastName: '山田',
-    firstName: '太郎',
-    isAdmin: false,
-    grade: 'G05',
-    occupation: '介護職',
-    facility: 'あおば保育園',
-  },
-  {
-    // 管理者（役員）
-    employeeId: '67890',
-    employeeCode: 'E67890',
-    lastName: '佐藤',
-    firstName: '花子',
-    isAdmin: true,
-    grade: 'X01',
-    occupation: '役員',
-    facility: 'あおば病院',
-  },
-  {
-    // 施設長
-    employeeId: '54321',
-    employeeCode: 'E54321',
-    lastName: '鈴木',
-    firstName: '次郎',
-    isAdmin: false,
-    grade: 'G06',
-    occupation: '施設長',
-    facility: 'あおばクリニック',
-  },
-  {
-    // 非考課者
-    employeeId: '98765',
-    employeeCode: 'E98765',
-    lastName: '田中',
-    firstName: '三郎',
-    isAdmin: false,
-    grade: 'G03',
-    occupation: '事務職',
-    facility: 'あおば福祉センター',
-  },
-];
 
 // 自分の情報を取得（モックとAPI切り替え）
 export async function fetchMe(token) {
@@ -62,6 +16,45 @@ export async function fetchMe(token) {
     headers: { Authorization: `Bearer ${token}` }
   });
 }
+
+// 全従業員一覧を取得
+export async function fetchEmployees(params = {}) {
+  // モック利用時
+  if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
+    // モック時はフロントでフィルタ
+    return mockUsers.filter(user =>
+      Object.entries(params).every(([key, value]) =>
+        value ? String(user[key] ?? '').includes(value) : true
+      )
+    );
+  }
+  // クエリパラメータを付与（施設や職種でフィルタ）
+  const query = new URLSearchParams(params).toString();
+  const url = query ? `/api/employees?${query}` : '/api/employees';
+  return api(url, { method: 'GET' });
+}
+
+// 従業員1人を取得
+export async function fetchEmployeeById(employeeId) {
+  if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
+    return mockUsers.find(user => user.employeeId === employeeId);
+  }
+  return api(`/api/employees/${employeeId}`, { method: 'GET' });
+}
+
+// 従業員情報を更新
+export async function updateEmployee(employeeId, data) {
+  // モック利用時
+  if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
+    return mockUsers.find(user => user.employeeId === employeeId);
+  }
+  // 本番API
+  return api(`/api/employees/${employeeId}`, {
+    method: 'PUT',
+    body: data
+  });
+}
+
 
 // パスワードリセット申請
 export async function requestPasswordReset(employeeCode, facility) {

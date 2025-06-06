@@ -1,0 +1,67 @@
+export const mockCriteria = [
+  {
+    id: 1,
+    sectionId: "S01",
+    sectionName: "業務遂行能力",
+    type: "業務考課",
+    grade: ["G01", "G02", "G03"],
+    position: ["保育士", "看護師"],
+    questions: [
+      { id: 101, text: "業務手順を正確に守っているか", score: 4 },
+      { id: 102, text: "報告・連絡・相談が適切にできているか", score: 2 },
+    ],
+    period: "2024年度前期",
+  },
+  {
+    id: 5,
+    sectionId: "S01",
+    sectionName: "業務遂行能力",
+    type: "業務考課",
+    grade: ["G01", "G02", "G03"],
+    position: ["保育士", "看護師"],
+    questions: [
+      { id: 101, text: "業務手順を正確に守っているか", score: 4 },
+      { id: 102, text: "報告・連絡・相談が適切にできているか", score: 2 },
+    ],
+    period: "2023年度前期",
+  },
+  {
+    id: 2,
+    sectionId: "S02",
+    sectionName: "協調性",
+    type: "業務考課",
+    grade: ["G01", "G02", "G03", "G04"],
+    position: ["保育士", "事務員", "支援員"],
+    questions: [
+      { id: 201, text: "チームワークを大切にしているか", score: 4 },
+      { id: 202, text: "他職種との連携ができているか", score: 2 },
+    ],
+    period: "2024年度後期",
+  },
+  {
+    id: 3,
+    sectionId: "S03",
+    sectionName: "挨拶",
+    type: "働き方の指針",
+    grade: ["G01", "G02", "G03", "G04", "G05", "G06"],
+    position: [],
+    questions: [
+      { id: 301, text: "時間を守って行動しているか", score: 4 },
+      { id: 302, text: "職場のルールを守っているか", score: 2 },
+    ],
+    period: "2024年度前期",
+  },
+  {
+    id: 4,
+    sectionId: "S04",
+    sectionName: "リーダーシップ",
+    type: "業務考課",
+    grade: ["G05", "G06"],
+    position: ["施設長"],
+    questions: [
+      { id: 401, text: "部下の指導・育成ができているか", score: 4 },
+      { id: 402, text: "組織目標の達成に貢献しているか", score: 2 },
+    ],
+    period: "2024年度後期",
+  },
+];
