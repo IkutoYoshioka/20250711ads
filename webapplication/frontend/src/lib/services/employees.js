@@ -7,7 +7,7 @@ export async function fetchMe(token) {
   // モック利用時
   if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
     // トークンがなくてもモックを返す
-    return mockUsers[1]; // 例: 管理者
+    return mockUsers[2]; // 例: 管理者
   }
   // 本番API
   if (!token) return null;
