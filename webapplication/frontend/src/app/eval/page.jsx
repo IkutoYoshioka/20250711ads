@@ -1,16 +1,10 @@
-import React from 'react'
-import AppLayout from '@/components/ui/layout/AppLayout'
+'use client';
+import React from 'react';
 import HomeDashboard from '@/components/ui/layout/HomeDashboard';
-import { mockUsers } from '@/mock_data/mockUsers'
+import { useUser } from '@/context/UserContext';
 
-const mockUser = mockUsers[2]; //施設長
 
-const EvalPage = () => {
-  return (
-    <AppLayout user={mockUser}>
-      <HomeDashboard user={mockUser} />
-    </AppLayout>
-  )
+export default function EvalHomePage() {
+    const user = useUser();
+  return <HomeDashboard user={user} />;
 }
-
-export default EvalPage
