@@ -1,22 +1,14 @@
 import api from '@/lib/api';
 import { mockAssignments } from '@/mock_data/mockAssignments';
-import { mockEvaluationResults, mockEvaluationCriteria } from '@/mock_data/mockEvaluationDetails';
+import { mockEvaluationResults } from '@/mock_data/mockEvaluationDetails';
 
-// 進行中の人事考課関連
-
-// 進行中の人事考課一覧取得（モック対応）
+// 割り当て一覧取得
 export async function fetchAssignments(params = {}) {
   if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
     let data = mockAssignments;
-    if (params.period) {
-      data = data.filter(a => a.period === params.period);
-    }
-    if (params.status) {
-      data = data.filter(a => a.status === params.status);
-    }
-    if (params.facility) {
-      data = data.filter(a => a.facility === params.facility);
-    }
+    if (params.period) data = data.filter(a => a.period === params.period);
+    if (params.status) data = data.filter(a => a.status === params.status);
+    if (params.facility) data = data.filter(a => a.facility === params.facility);
     return data;
   }
   const query = new URLSearchParams(params).toString();
@@ -24,38 +16,66 @@ export async function fetchAssignments(params = {}) {
   return api(url, { method: 'GET' });
 }
 
-// 個別割り当て詳細取得API
-export async function fetchAssignmentDetail(assignmentId) {
+// 既存評価取得API（評価結果・点数・評価基準もここで返す設計にする）
+export async function fetchSavedEvaluation(evaluateeId, evaluatorId) {
   if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
-    // 疑似データから取得
-    const assignment = mockAssignments.find(a => a.assignmentId === assignmentId);
-    if (!assignment) return null;
-    // 評価データ・評価基準もモックから取得
-    const evaluationResult = mockEvaluationResults[assignmentId] || [];
-    const evaluationCriteria = mockEvaluationCriteria || [];
+    // mockEvaluationResults は配列
+    const evaluationData = mockEvaluationResults.find(
+      data => data.individual.employeeId === evaluateeId
+    );
+
+    if (!evaluationData) return null;
+
     return {
-      individual: assignment,
-      evaluationResult,
-      evaluationCriteria,
+      individual: evaluationData.individual,
+      sections: evaluationData.sections,
+      sectionScores: evaluationData.sectionScores,
+      scores: evaluationData.scores,
     };
   }
-  // 本番API
-  return api(`/api/assignments/${assignmentId}`, { method: 'GET' });
+
+  return api(`/api/assignments/evaluation/result?savedBy=${evaluatorId}&target=${evaluateeId}`, { method: 'GET' });
 }
 
-// 個別割り当て詳細取得API（employeeIdで取得）
-export async function fetchAssignmentDetailByEmployeeId(employeeId) {
+// 評価保存
+export async function saveEvaluation(evaluateeId, evaluatorId, evaluationDetails) {
   if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
-    const assignment = mockAssignments.find(a => a.employeeId === employeeId);
-    if (!assignment) return null;
-    const evaluationResult = mockEvaluationResults[employeeId] || [];
-    const evaluationCriteria = mockEvaluationCriteria || [];
-    return {
-      individual: assignment,
-      evaluationResult,
-      evaluationCriteria,
-    };
+    return { success: true };
   }
-  // 本番API
-  return api(`/api/assignments/employee/${employeeId}`, { method: 'GET' });
+  return api(`/api/assignments/evaluation`, {
+    method: 'POST',
+    body: { evaluatorId, evaluateeId, evaluationDetails },
+  });
+}
+
+// 進行状況一覧取得API
+export async function fetchProgress(params = {}) {
+  if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
+    let data = mockAssignments;
+    if (params.period) data = data.filter(a => a.period === params.period);
+    if (params.facility) data = data.filter(a => a.facility === params.facility);
+
+    // テーブル用に整形（各考課段階で2人ずつ表示）
+    return data.map(a => ({
+      employeeId: a.employeeId,
+      name: a.lastName + ' ' + a.firstName,
+      facility: a.facility,
+      firstEvaluators: [
+        a.workingGuidelinesPrimaryEvaluatorName,
+        a.performanceEvaluationPrimaryEvaluatorName,
+      ],
+      secondEvaluators: [
+        a.workingGuidelinesSecondaryEvaluatorName,
+        a.performanceEvaluationSecondaryEvaluatorName,
+      ],
+      finalEvaluators: [
+        a.workingGuidelinesFinalEvaluatorName,
+        a.performanceEvaluationFinalEvaluatorName,
+      ],
+      status: a.status,
+    }));
+  }
+  const query = new URLSearchParams(params).toString();
+  const url = query ? `/api/assignments/progress?${query}` : '/api/assignments/progress';
+  return api(url, { method: 'GET' });
 }

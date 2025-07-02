@@ -1,92 +1,494 @@
-// 評価基準（設問定義）
-export const mockEvaluationCriteria = [
+// 評価データをcriteriaとresult統合形式で
+export const mockEvaluationResults =[  
   {
-    sectionId: "s1",
-    sectionName: "主体性",
-    type: "働き方の指針",
-    occupation: ["保育士", "看護師", "調理師", "施設長"],
-    grade: ["G01", "G02", "G06"],
-    questions: [
-      { id: "q1", text: "自ら考えて行動したか", score: 10 },
-      { id: "q2", text: "新しい提案をしたか", score: 10 },
+    individual: {
+      employeeId: "1001",
+      lastName: "山田",
+      firstName: "太郎",
+      facility: "本園",
+      occupation: "保育士",
+      grade: "G01",
+      period: "2024年度前期",
+      status: "進行中",
+      evaluatorId: {
+        workingGuidelines: "1002",
+        performanceEvaluation: "1003",
+      },
+      updatedAt: "2025-06-01",
+    },
+    sections: [
+      {
+        sectionId: "s1",
+        sectionName: "主体性",
+        type: "働き方の指針",
+        questions: [
+          {
+            id: "q1",
+            text: "自ら考えて行動したか",
+            score: 10,
+            obtainedScore: 8, // 獲得点数
+          },
+          {
+            id: "q2",
+            text: "新しい提案をしたか",
+            score: 10,
+            obtainedScore: 7,
+          },
+        ],
+      },
+      {
+        sectionId: "s2",
+        sectionName: "協調性",
+        type: "働き方の指針",
+        questions: [
+          {
+            id: "q3",
+            text: "チームで協力したか",
+            score: 10,
+            obtainedScore: 9,
+          },
+          {
+            id: "q4",
+            text: "他者の意見を尊重したか",
+            score: 10,
+            obtainedScore: 8,
+          },
+        ],
+      },
+      {
+        sectionId: "s3",
+        sectionName: "業務遂行",
+        type: "業務考課",
+        questions: [
+          {
+            id: "q5",
+            text: "業務を期限内に完了したか",
+            score: 20,
+            obtainedScore: 18,
+          },
+          {
+            id: "q6",
+            text: "品質を保ったか",
+            score: 20,
+            obtainedScore: 19,
+          },
+        ],
+      },
+      {
+        sectionId: "s4",
+        sectionName: "改善提案",
+        type: "業務考課",
+        questions: [
+          {
+            id: "q7",
+            text: "業務改善を提案したか",
+            score: 10,
+            obtainedScore: 7,
+          },
+          {
+            id: "q8",
+            text: "提案を実行したか",
+            score: 10,
+            obtainedScore: 8,
+          },
+        ],
+      },
     ],
+    // セクションごとの合計点・獲得点数
+    sectionScores: [
+      {
+        sectionId: "s1",
+        totalScore: 20,
+        obtainedScore: 15,
+      },
+      {
+        sectionId: "s2",
+        totalScore: 20,
+        obtainedScore: 17,
+      },
+      {
+        sectionId: "s3",
+        totalScore: 40,
+        obtainedScore: 37,
+      },
+      {
+        sectionId: "s4",
+        totalScore: 20,
+        obtainedScore: 15,
+      },
+    ],
+    // 全体の点数
+    scores: {
+      workingGuidelines: 80,
+      performanceEvaluation: 87,
+      total: 84,
+    },
   },
   {
-    sectionId: "s2",
-    sectionName: "協調性",
-    type: "働き方の指針",
-    occupation: ["保育士", "看護師", "調理師", "施設長"],
-    grade: ["G01", "G02", "G06"],
-    questions: [
-      { id: "q3", text: "チームで協力したか", score: 10 },
-      { id: "q4", text: "他者の意見を尊重したか", score: 10 },
+    individual: {
+      employeeId: "A002",
+      lastName: "佐藤",
+      firstName: "花子",
+      facility: "分園",
+      occupation: "看護師",
+      grade: "G02",
+      period: "2024年度前期",
+      status: "未着手",
+      evaluatorId: {
+        workingGuidelines: "1002",
+        performanceEvaluation: "1003",
+      },
+      updatedAt: "2025-06-02",
+    },
+    sections: [
+      {
+        sectionId: "s1",
+        sectionName: "主体性",
+        type: "働き方の指針",
+        questions: [
+          {
+            id: "q1",
+            text: "自ら考えて行動したか",
+            score: 10,
+            obtainedScore: 6,
+          },
+          {
+            id: "q2",
+            text: "新しい提案をしたか",
+            score: 10,
+            obtainedScore: 7,
+          },
+        ],
+      },
+      {
+        sectionId: "s2",
+        sectionName: "協調性",
+        type: "働き方の指針",
+        questions: [
+          {
+            id: "q3",
+            text: "チームで協力したか",
+            score: 10,
+            obtainedScore: 8,
+          },
+          {
+            id: "q4",
+            text: "他者の意見を尊重したか",
+            score: 10,
+            obtainedScore: 7,
+          },
+        ],
+      },
+      {
+        sectionId: "s3",
+        sectionName: "業務遂行",
+        type: "業務考課",
+        questions: [
+          {
+            id: "q5",
+            text: "業務を期限内に完了したか",
+            score: 20,
+            obtainedScore: 15,
+          },
+          {
+            id: "q6",
+            text: "品質を保ったか",
+            score: 20,
+            obtainedScore: 16,
+          },
+        ],
+      },
+      {
+        sectionId: "s4",
+        sectionName: "改善提案",
+        type: "業務考課",
+        questions: [
+          {
+            id: "q7",
+            text: "業務改善を提案したか",
+            score: 10,
+            obtainedScore: 6,
+          },
+          {
+            id: "q8",
+            text: "提案を実行したか",
+            score: 10,
+            obtainedScore: 7,
+          },
+        ],
+      },
     ],
+    sectionScores: [
+      {
+        sectionId: "s1",
+        totalScore: 20,
+        obtainedScore: 13,
+      },
+      {
+        sectionId: "s2",
+        totalScore: 20,
+        obtainedScore: 15,
+      },
+      {
+        sectionId: "s3",
+        totalScore: 40,
+        obtainedScore: 31,
+      },
+      {
+        sectionId: "s4",
+        totalScore: 20,
+        obtainedScore: 13,
+      },
+    ],
+    scores: {
+      workingGuidelines: 70,
+      performanceEvaluation: 80,
+      total: 75,
+    },
   },
   {
-    sectionId: "s3",
-    sectionName: "業務遂行",
-    type: "業務考課",
-    occupation: ["保育士", "看護師", "調理師", "施設長"],
-    grade: ["G01", "G02", "G06"],
-    questions: [
-      { id: "q5", text: "業務を期限内に完了したか", score: 20 },
-      { id: "q6", text: "品質を保ったか", score: 20 },
+    individual: {
+      employeeId: "A003",
+      lastName: "鈴木",
+      firstName: "一郎",
+      facility: "本園",
+      occupation: "調理師",
+      grade: "G06",
+      period: "2024年度前期",
+      status: "進行中",
+      evaluatorId: {
+        workingGuidelines: "1001",
+        performanceEvaluation: "1002",
+      },
+      updatedAt: "2025-06-01",
+    },
+    sections: [
+      {
+        sectionId: "s1",
+        sectionName: "主体性",
+        type: "働き方の指針",
+        questions: [
+          {
+            id: "q1",
+            text: "自ら考えて行動したか",
+            score: 10,
+            obtainedScore: 10,
+          },
+          {
+            id: "q2",
+            text: "新しい提案をしたか",
+            score: 10,
+            obtainedScore: 10,
+          },
+        ],
+      },
+      {
+        sectionId: "s2",
+        sectionName: "協調性",
+        type: "働き方の指針",
+        questions: [
+          {
+            id: "q3",
+            text: "チームで協力したか",
+            score: 10,
+            obtainedScore: 10,
+          },
+          {
+            id: "q4",
+            text: "他者の意見を尊重したか",
+            score: 10,
+            obtainedScore: 10,
+          },
+        ],
+      },
+      {
+        sectionId: "s3",
+        sectionName: "業務遂行",
+        type: "業務考課",
+        questions: [
+          {
+            id: "q5",
+            text: "業務を期限内に完了したか",
+            score: 20,
+            obtainedScore: 20,
+          },
+          {
+            id: "q6",
+            text: "品質を保ったか",
+            score: 20,
+            obtainedScore: 20,
+          },
+        ],
+      },
+      {
+        sectionId: "s4",
+        sectionName: "改善提案",
+        type: "業務考課",
+        questions: [
+          {
+            id: "q7",
+            text: "業務改善を提案したか",
+            score: 10,
+            obtainedScore: 10,
+          },
+          {
+            id: "q8",
+            text: "提案を実行したか",
+            score: 10,
+            obtainedScore: 10,
+          },
+        ],
+      },
     ],
+    sectionScores: [
+      {
+        sectionId: "s1",
+        totalScore: 20,
+        obtainedScore: 20,
+      },
+      {
+        sectionId: "s2",
+        totalScore: 20,
+        obtainedScore: 20,
+      },
+      {
+        sectionId: "s3",
+        totalScore: 40,
+        obtainedScore: 40,
+      },
+      {
+        sectionId: "s4",
+        totalScore: 20,
+        obtainedScore: 20,
+      },
+    ],
+    scores: {
+      workingGuidelines: 90,
+      performanceEvaluation: 95,
+      total: 92,
+    },
   },
   {
-    sectionId: "s4",
-    sectionName: "改善提案",
-    type: "業務考課",
-    occupation: ["保育士", "看護師", "調理師", "施設長"],
-    grade: ["G01", "G02", "G06"],
-    questions: [
-      { id: "q7", text: "業務改善を提案したか", score: 10 },
-      { id: "q8", text: "提案を実行したか", score: 10 },
+    individual: {
+      employeeId: "A004",
+      lastName: "田中",
+      firstName: "次郎",
+      facility: "分園",
+      occupation: "施設長",
+      grade: "G06",
+      period: "2024年度前期",
+      status: "未着手",
+      evaluatorId: {
+        workingGuidelines: "1004",
+        performanceEvaluation: "1005",
+      },
+      updatedAt: "2025-06-02",
+    },
+    sections: [
+      {
+        sectionId: "s1",
+        sectionName: "主体性",
+        type: "働き方の指針",
+        questions: [
+          {
+            id: "q1",
+            text: "自ら考えて行動したか",
+            score: 10,
+            obtainedScore: 9,
+          },
+          {
+            id: "q2",
+            text: "新しい提案をしたか",
+            score: 10,
+            obtainedScore: 8,
+          },
+        ],
+      },
+      {
+        sectionId: "s2",
+        sectionName: "協調性",
+        type: "働き方の指針",
+        questions: [
+          {
+            id: "q3",
+            text: "チームで協力したか",
+            score: 10,
+            obtainedScore: 9,
+          },
+          {
+            id: "q4",
+            text: "他者の意見を尊重したか",
+            score: 10,
+            obtainedScore: 8,
+          },
+        ],
+      },
+      {
+        sectionId: "s3",
+        sectionName: "業務遂行",
+        type: "業務考課",
+        questions: [
+          {
+            id: "q5",
+            text: "業務を期限内に完了したか",
+            score: 20,
+            obtainedScore: 19,
+          },
+          {
+            id: "q6",
+            text: "品質を保ったか",
+            score: 20,
+            obtainedScore: 18,
+          },
+        ],
+      },
+      {
+        sectionId: "s4",
+        sectionName: "改善提案",
+        type: "業務考課",
+        questions: [
+          {
+            id: "q7",
+            text: "業務改善を提案したか",
+            score: 10,
+            obtainedScore: 8,
+          },
+          {
+            id: "q8",
+            text: "提案を実行したか",
+            score: 10,
+            obtainedScore: 9,
+          },
+        ],
+      },
     ],
+    sectionScores: [
+      {
+        sectionId: "s1",
+        totalScore: 20,
+        obtainedScore: 17,
+      },
+      {
+        sectionId: "s2",
+        totalScore: 20,
+        obtainedScore: 17,
+      },
+      {
+        sectionId: "s3",
+        totalScore: 40,
+        obtainedScore: 37,
+      },
+      {
+        sectionId: "s4",
+        totalScore: 20,
+        obtainedScore: 17,
+      },
+    ],
+    scores: {
+      workingGuidelines: 85,
+      performanceEvaluation: 90,
+      total: 88,
+    },
   },
+  // 他のemployeeIdも必要に応じて追加
 ];
-
-// 各assignmentIdごとの評価データ
-export const mockEvaluationResults = {
-  A001: [
-    { questionId: "q1", score: 8 },
-    { questionId: "q2", score: 7 },
-    { questionId: "q3", score: 9 },
-    { questionId: "q4", score: 8 },
-    { questionId: "q5", score: 18 },
-    { questionId: "q6", score: 19 },
-    { questionId: "q7", score: 7 },
-    { questionId: "q8", score: 8 },
-  ],
-  A002: [
-    { questionId: "q1", score: 6 },
-    { questionId: "q2", score: 7 },
-    { questionId: "q3", score: 8 },
-    { questionId: "q4", score: 7 },
-    { questionId: "q5", score: 15 },
-    { questionId: "q6", score: 16 },
-    { questionId: "q7", score: 6 },
-    { questionId: "q8", score: 7 },
-  ],
-  A003: [
-    { questionId: "q1", score: 10 },
-    { questionId: "q2", score: 10 },
-    { questionId: "q3", score: 10 },
-    { questionId: "q4", score: 10 },
-    { questionId: "q5", score: 20 },
-    { questionId: "q6", score: 20 },
-    { questionId: "q7", score: 10 },
-    { questionId: "q8", score: 10 },
-  ],
-  A004: [
-    { questionId: "q1", score: 9 },
-    { questionId: "q2", score: 8 },
-    { questionId: "q3", score: 9 },
-    { questionId: "q4", score: 8 },
-    { questionId: "q5", score: 19 },
-    { questionId: "q6", score: 18 },
-    { questionId: "q7", score: 8 },
-    { questionId: "q8", score: 9 },
-  ],
-  // 他のassignmentIdも必要に応じて追加
-};

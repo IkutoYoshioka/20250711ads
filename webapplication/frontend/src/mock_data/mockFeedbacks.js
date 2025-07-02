@@ -8,6 +8,106 @@ export const feedbacks = [
     grade: "G01",
     periods: [
       {
+        period: "2022年度後期",
+        workGuideline: {
+          score: 93,
+          sections: [
+            {
+              sectionId: "wg-1",
+              section: "主体性",
+              score: 96,
+              questions: [
+                { questionId: "1001-2022年度後期-wg-1-q1", question: "自ら考えて行動したか", maxScore: 10, obtainedScore: 8 },
+                { questionId: "1001-2022年度後期-wg-1-q2", question: "新しい提案をしたか", maxScore: 10, obtainedScore: 9 },
+              ],
+            },
+            {
+              sectionId: "wg-2",
+              section: "協調性",
+              score: 90,
+              questions: [
+                { questionId: "1001-2022年度後期-wg-2-q1", question: "チームで協力したか", maxScore: 10, obtainedScore: 7 },
+                { questionId: "1001-2022年度後期-wg-2-q2", question: "他者の意見を尊重したか", maxScore: 10, obtainedScore: 8 },
+              ],
+            },
+          ],
+        },
+        performanceReview: {
+          score: 82,
+          sections: [
+            {
+              sectionId: "pr-1",
+              section: "業務遂行",
+              score: 85,
+              questions: [
+                { questionId: "1001-2022年度後期-pr-1-q1", question: "業務を期限内に完了したか", maxScore: 10, obtainedScore: 8 },
+                { questionId: "1001-2022年度後期-pr-1-q2", question: "品質を保ったか", maxScore: 10, obtainedScore: 9 },
+              ],
+            },
+            {
+              sectionId: "pr-2",
+              section: "改善提案",
+              score: 80,
+              questions: [
+                { questionId: "1001-2022年度後期-pr-2-q1", question: "業務改善を提案したか", maxScore: 10, obtainedScore: 8 },
+                { questionId: "1001-2022年度後期-pr-2-q2", question: "提案を実行したか", maxScore: 10, obtainedScore: 8 },
+              ],
+            },
+          ],
+        },
+        totalScore: (93 + 82) / 2, // 本番はバックエンドから取得するので、ここでは計算しない
+      },
+       {
+        period: "2023年度前期",
+        workGuideline: {
+          score: 93,
+          sections: [
+            {
+              sectionId: "wg-1",
+              section: "主体性",
+              score: 96,
+              questions: [
+                { questionId: "1001-2023年度前期-wg-1-q1", question: "自ら考えて行動したか", maxScore: 10, obtainedScore: 8 },
+                { questionId: "1001-2023年度前期-wg-1-q2", question: "新しい提案をしたか", maxScore: 10, obtainedScore: 9 },
+              ],
+            },
+            {
+              sectionId: "wg-2",
+              section: "協調性",
+              score: 90,
+              questions: [
+                { questionId: "1001-2023年度前期-wg-2-q1", question: "チームで協力したか", maxScore: 10, obtainedScore: 7 },
+                { questionId: "1001-2023年度前期-wg-2-q2", question: "他者の意見を尊重したか", maxScore: 10, obtainedScore: 8 },
+              ],
+            },
+          ],
+        },
+        performanceReview: {
+          score: 82,
+          sections: [
+            {
+              sectionId: "pr-1",
+              section: "業務遂行",
+              score: 85,
+              questions: [
+                { questionId: "1001-2023年度前期-pr-1-q1", question: "業務を期限内に完了したか", maxScore: 10, obtainedScore: 8 },
+                { questionId: "1001-2023年度前期-pr-1-q2", question: "品質を保ったか", maxScore: 10, obtainedScore: 9 },
+              ],
+            },
+            {
+              sectionId: "pr-2",
+              section: "改善提案",
+              score: 80,
+              questions: [
+                { questionId: "1001-2023年度前期-pr-2-q1", question: "業務改善を提案したか", maxScore: 10, obtainedScore: 8 },
+                { questionId: "1001-2023年度前期-pr-2-q2", question: "提案を実行したか", maxScore: 10, obtainedScore: 8 },
+              ],
+            },
+          ],
+        },
+        totalScore: (93 + 82) / 2, // 本番はバックエンドから取得するので、ここでは計算しない
+      },
+      {
         period: "2023年度後期",
         workGuideline: {
           score: 93,
@@ -117,6 +217,56 @@ export const feedbacks = [
     occupation: "看護師",
     grade: "G02",
     periods: [
+       {
+        period: "2023年度前期",
+        workGuideline: {
+          score: 93,
+          sections: [
+            {
+              sectionId: "wg-1",
+              section: "主体性",
+              score: 96,
+              questions: [
+                { questionId: "1001-2023年度前期-wg-1-q1", question: "自ら考えて行動したか", maxScore: 10, obtainedScore: 8 },
+                { questionId: "1001-2023年度前期-wg-1-q2", question: "新しい提案をしたか", maxScore: 10, obtainedScore: 9 },
+              ],
+            },
+            {
+              sectionId: "wg-2",
+              section: "協調性",
+              score: 90,
+              questions: [
+                { questionId: "1001-2023年度前期-wg-2-q1", question: "チームで協力したか", maxScore: 10, obtainedScore: 7 },
+                { questionId: "1001-2023年度前期-wg-2-q2", question: "他者の意見を尊重したか", maxScore: 10, obtainedScore: 8 },
+              ],
+            },
+          ],
+        },
+        performanceReview: {
+          score: 82,
+          sections: [
+            {
+              sectionId: "pr-1",
+              section: "業務遂行",
+              score: 85,
+              questions: [
+                { questionId: "1001-2023年度前期-pr-1-q1", question: "業務を期限内に完了したか", maxScore: 10, obtainedScore: 8 },
+                { questionId: "1001-2023年度前期-pr-1-q2", question: "品質を保ったか", maxScore: 10, obtainedScore: 9 },
+              ],
+            },
+            {
+              sectionId: "pr-2",
+              section: "改善提案",
+              score: 80,
+              questions: [
+                { questionId: "1001-2023年度前期-pr-2-q1", question: "業務改善を提案したか", maxScore: 10, obtainedScore: 8 },
+                { questionId: "1001-2023年度前期-pr-2-q2", question: "提案を実行したか", maxScore: 10, obtainedScore: 8 },
+              ],
+            },
+          ],
+        },
+        totalScore: (93 + 82) / 2, // 本番はバックエンドから取得するので、ここでは計算しない
+      },
       {
         period: "2023年度後期",
         workGuideline: {

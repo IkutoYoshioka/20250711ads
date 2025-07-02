@@ -7,41 +7,23 @@ import { mockQuestionAnalysis } from '@/mock_data/mockFeedbacksQuestions';
 // 人事考課の最終結果一覧を取得（一覧ページ・施設分析ページなどで利用）
 export async function fetchFeedbacks(params = {}) {
   if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
-    // 期の一覧を取得
-    const allPeriods = Array.from(
-      new Set(mockFeedbacks.flatMap(f => f.periods.map(p => p.period)))
-    );
-    // 期の降順（新しい順）でソート
-    allPeriods.sort((a, b) => b.localeCompare(a, 'ja', { numeric: true }));
-
     // 期指定
     let period = params.period;
+    // "latest"なら各人の最新periodのみ
     if (!period || period === 'latest') {
-      period = allPeriods[0];
+      // 各人の最新periodだけ残す
+      return mockFeedbacks.map(person => ({
+        ...person,
+        periods: [person.periods[person.periods.length - 1]],
+      }));
     }
 
-    // 期・その他フィルタで絞り込み
-    let data = mockFeedbacks
-      .map(person => ({
-        ...person,
-        periods: person.periods.filter(p => p.period === period),
-      }))
-      .filter(person => person.periods.length > 0);
-
-    // 他のフィルタ
-    data = data.filter(person => {
-      return Object.entries(params).every(([key, value]) => {
-        if (key === 'period') return true;
-        if (value === '' || value === 'all') return true;
-        if (key === 'achievement') return person.periods[0]?.totalScore === Number(value);
-        if (['facility', 'occupation', 'grade'].includes(key)) {
-          return person[key] === value;
-        }
-        return true;
-      });
-    });
-
-    return data;
+    // 期が指定されている場合は、その期だけ残す
+    // ただし、全員分のperiodsから「その期だけ」を残す（空でもOK）
+    return mockFeedbacks.map(person => ({
+      ...person,
+      periods: person.periods.filter(p => p.period === period),
+    }));
   }
 
   // API利用時

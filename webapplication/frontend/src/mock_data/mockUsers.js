@@ -11,26 +11,42 @@ export const mockUsers = [
     facility: 'あおば保育園',
 },
     {
-    // 管理者（役員）
-    employeeId: '67890',
+    // 
+    employeeId: '1002',
     employeeCode: 'E67890',
     lastName: '佐藤',
     firstName: '花子',
-    isAdmin: true,
-    grade: 'X01', 
-    occupation: '役員',
-    facility: 'あおば病院',
+    isAdmin: false,
+    grade: 'G06', 
+    occupation: '施設長',
+    facility: '分園',
+    email: 'sample.main@hospital.com',
+    phone: '03-1234-5678',
+    licensesObtained: '看護師免許, CPR資格',
+    licensesFuture: [                  // 今後取得予定の資格（配列）
+    {
+      name: "ケアマネージャー",     // 資格名
+      date: "2025-12-31",           // 予定日（文字列）
+      reason: "キャリアアップのため" // 理由
+    },
+    {
+      name: "看護師",
+      date: "2026-03-01",
+      reason: "業務拡張のため"
+    }
+  ],
+
 },
     {
-    // 施設長
+    // 管理者
     employeeId: '54321',
     employeeCode: 'E54321',
     lastName: '鈴木',
     firstName: '次郎',
-    isAdmin: false,
-    grade: 'G06', 
-    occupation: '施設長',
-    facility: 'あおばクリニック',
+    isAdmin: true,
+    grade: 'X01', 
+    occupation: '役員',
+    facility: '本部',
 },
     {
     // 非考課者

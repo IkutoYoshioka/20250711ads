@@ -1,87 +1,59 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { FiEdit } from "react-icons/fi";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Toaster, toast } from "sonner";
-import { fetchEvaluationCriteria, updateEvaluationCriterion } from "@/lib/services/questions";
-import { AlertDialog, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription } from "@/components/ui/alert-dialog";
+import { fetchEvaluationCriteria, updateEvaluationCriterion, createEvaluationCriterion } from "@/lib/services/questions";
+import { FiEdit, FiPlus } from "react-icons/fi";
 import EditModal from "./EditModal";
+import Link from "next/link";
 
-const CriteriaTable = ({ items, onEdit }) => (
-  <div className="overflow-x-auto rounded-lg shadow border bg-white">
-    <table className="min-w-full divide-y divide-gray-200">
-      <thead className="bg-gray-50">
-        <tr>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">セクション名</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">セクションID</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">等級</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">職種</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">質問数</th>
-          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">質問内容</th>
-          <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">操作</th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-gray-100">
-        {items.length === 0 ? (
-          <tr>
-            <td colSpan={7} className="text-center py-6 text-gray-400">
-              データがありません
-            </td>
-          </tr>
-        ) : (
-          items.map((item) => (
-            <tr key={item.id} className="hover:bg-gray-50 transition">
-              <td className="px-4 py-2">{item.sectionName}</td>
-              <td className="px-4 py-2">{item.sectionId}</td>
-              <td className="px-4 py-2">
-                {item.grade.map((g) => (
-                  <span key={g} className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">{g}</span>
-                ))}
-              </td>
-              <td className="px-4 py-2">
-                {item.position.length > 0
-                  ? item.position.map((p) => (
-                      <span key={p} className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-1 mb-1">{p}</span>
-                    ))
-                  : <span className="text-gray-400">全職種</span>
-                }
-              </td>
-              <td className="px-4 py-2">{item.questions.length}</td>
-              <td className="px-4 py-2">
-                <ul className="list-disc pl-4 space-y-1">
-                  {item.questions.map((q) => (
-                    <li key={q.id} className="text-sm">
-                      <span className="font-medium">{q.text}</span>
-                      <span className="ml-2 text-xs text-gray-500">（スコア: {q.score}）</span>
-                    </li>
-                  ))}
-                </ul>
-              </td>
-              <td className="px-4 py-2 text-center">
-                <Button size="sm" variant="outline" onClick={() => onEdit(item)}>
-                  <FiEdit className="mr-1" /> 編集
-                </Button>
-              </td>
-            </tr>
-          ))
-        )}
-      </tbody>
-    </table>
+
+// セクションカード（編集・表示切り替え）
+const SectionCard = ({ section, onEdit }) => (
+  <div className="bg-white rounded-xl shadow border p-6 mb-6 flex flex-col gap-2 hover:shadow-lg transition">
+    <div className="flex items-center justify-between mb-2">
+      <div>
+        <span className="font-bold text-lg text-blue-800">{section.sectionName}</span>
+        <span className="ml-3 px-2 py-0.5 rounded bg-gray-100 text-xs text-gray-600 border">{section.type}</span>
+        <span className="ml-2 text-xs text-gray-500">ID: {section.id}</span>
+      </div>
+      <Button size="sm" variant="outline" onClick={() => onEdit(section)}>
+        <FiEdit className="mr-1" /> 編集
+      </Button>
+    </div>
+    <div className="flex flex-wrap gap-4 text-xs text-gray-600 mb-1">
+      <div>
+        <span className="font-semibold">職種:</span>{" "}
+        {section.occupation?.length ? section.occupation.join(", ") : "未設定"}
+      </div>
+      <div>
+        <span className="font-semibold">等級:</span>{" "}
+        {section.grade?.length ? section.grade.join(", ") : "未設定"}
+      </div>
+      <div>
+        <span className="font-semibold">質問数:</span> {section.questions.length}
+      </div>
+      <div>
+        <span className="font-semibold">合計スコア:</span>{" "}
+        {section.questions.reduce((sum, q) => sum + (q.score || 0), 0)}
+      </div>
+    </div>
+    <ul className="divide-y mt-2">
+      {section.questions.map((q, idx) => (
+        <li key={q.questionId} className="py-2 flex items-start gap-2">
+          <span className="rounded bg-blue-100 text-blue-700 px-2 py-0.5 text-xs font-bold">{idx + 1}</span>
+          <span className="font-medium">{q.text}</span>
+          <span className="ml-auto text-xs text-gray-500">スコア: {q.score}</span>
+        </li>
+      ))}
+    </ul>
   </div>
 );
 
-const EvaluationSetup = () => {
+const EditQuestionsPage = () => {
   const [criteria, setCriteria] = useState([]);
-  const [editingCriterion, setEditingCriterion] = useState(null);
-  const [selectedType, setSelectedType] = useState("");
-  const [selectedPosition, setSelectedPosition] = useState("all");
-  const [selectedGrade, setSelectedGrade] = useState("all");
-  const [period, setPeriod] = useState(""); // 最新期をデフォルトに
-  const [selectedSectionName, setSelectedSectionName] = useState("");
-  const router = useRouter();
+  const [editingSection, setEditingSection] = useState(null);
+  const [showCreate, setShowCreate] = useState(false);
 
   // データ取得
   useEffect(() => {
@@ -89,201 +61,92 @@ const EvaluationSetup = () => {
       try {
         const data = await fetchEvaluationCriteria();
         setCriteria(data);
-        // 最新のperiodを自動選択
-        const periods = [...new Set(data.map((item) => item.period))];
-        const latest = periods.sort().reverse()[0];
-        setPeriod(latest);
       } catch (error) {
-        console.error("データの取得に失敗しました:", error);
+        toast.error("データの取得に失敗しました");
       }
     };
     fetchData();
   }, []);
 
-  // type一覧
-  const uniqueTypes = useMemo(() => [...new Set(criteria.map((item) => item.type))], [criteria]);
-  // type選択初期値
-  useEffect(() => {
-    if (uniqueTypes.length > 0 && !selectedType) setSelectedType(uniqueTypes[0]);
-  }, [uniqueTypes, selectedType]);
-
-  // period一覧
-  const uniquePeriods = useMemo(() => [...new Set(criteria.map((item) => item.period))].sort().reverse(), [criteria]);
-
-  // type, 職種, 等級で該当する全セクション（時系列比較用）
-  const matchedSections = useMemo(
-    () =>
-      criteria.filter(
-        (item) =>
-          item.type === selectedType &&
-          (selectedPosition === "all" ? true : item.position.includes(selectedPosition)) &&
-          (selectedGrade === "all" ? true : item.grade.includes(selectedGrade))
-      ),
-    [criteria, selectedType, selectedPosition, selectedGrade]
-  );
-
-  // セクション名一覧（該当するものだけ）
-  const sectionNames = useMemo(
-    () => [...new Set(matchedSections.map((item) => item.sectionName))],
-    [matchedSections]
-  );
-
-  // セクション名選択初期値
-  useEffect(() => {
-    if (sectionNames.length > 0 && !selectedSectionName) setSelectedSectionName(sectionNames[0]);
-  }, [sectionNames, selectedSectionName]);
-
-  // 選択されたセクションの時系列データ
-  const sectionHistory = useMemo(
-    () =>
-      matchedSections
-        .filter((item) => item.sectionName === selectedSectionName)
-        .sort((a, b) => (a.period < b.period ? 1 : -1)), // 新しい順
-    [matchedSections, selectedSectionName]
-  );
-
-  // 現在編集対象のデータ（最新期）
-  const currentCriterion = sectionHistory.find((item) => item.period === period);
-
-  // 編集モーダルの保存処理
-  const handleSave = async (updatedCriterion) => {
+  // セクション新規作成
+  const handleCreate = async (newSection) => {
     try {
-      await updateEvaluationCriterion(updatedCriterion);
+      const created = await createEvaluationCriterion(newSection);
+      setCriteria((prev) => [...prev, created]);
+      setShowCreate(false);
+      toast.success("新しいセクションを作成しました。");
+    } catch (error) {
+      toast.error("作成に失敗しました。");
+    }
+  };
+
+  // セクション編集
+  const handleSave = async (updatedSection) => {
+    try {
+      await updateEvaluationCriterion(updatedSection);
       setCriteria((prev) =>
         prev.map((item) =>
-          item.id === updatedCriterion.id && item.period === updatedCriterion.period
-            ? updatedCriterion
-            : item
+          item.id === updatedSection.id ? updatedSection : item
         )
       );
-      setEditingCriterion(null);
+      setEditingSection(null);
       toast.success("データを保存しました。");
     } catch (error) {
-      console.error("データの保存に失敗しました:", error);
       toast.error("データの保存に失敗しました。");
     }
   };
 
+  // typeごとにグループ化
+  const grouped = criteria.reduce((acc, section) => {
+    acc[section.type] = acc[section.type] || [];
+    acc[section.type].push(section);
+    return acc;
+  }, {});
+
+  const typeOrder = ["働き方の指針", "業務考課"];
+
   return (
     <>
       <Toaster position="top-right" richColors />
-      <div className="p-6 overflow-y-auto h-[580px]">
-        {/* type/period/職種/等級/セクション名切り替え */}
-        <div className="flex flex-wrap items-center gap-4 mb-6">
-          <h1 className="text-2xl font-bold">考課内容管理</h1>
-          <Select value={selectedType} onValueChange={setSelectedType}>
-            <SelectTrigger className="w-56">
-              <SelectValue placeholder="種類を選択" />
-            </SelectTrigger>
-            <SelectContent>
-              {uniqueTypes.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={selectedPosition} onValueChange={setSelectedPosition}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="職種を選択" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">すべて</SelectItem>
-              {[...new Set(criteria.flatMap((c) => c.position))].filter(Boolean).map((position) => (
-                <SelectItem key={position} value={position}>
-                  {position}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="等級を選択" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">すべて</SelectItem>
-              {[...new Set(criteria.flatMap((c) => c.grade))].map((grade) => (
-                <SelectItem key={grade} value={grade}>
-                  {grade}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={selectedSectionName} onValueChange={setSelectedSectionName}>
-            <SelectTrigger className="w-56">
-              <SelectValue placeholder="セクションを選択" />
-            </SelectTrigger>
-            <SelectContent>
-              {sectionNames.map((name) => (
-                <SelectItem key={name} value={name}>
-                  {name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          {/* 今期の割り当てボタンを追加 */}
-          <Button
-            className="ml-4"
-            variant="default"
-            onClick={() => router.push("/admin/edit_db/edit_questions/assign_questions")}
-          >
-            今期の割り当て
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold">セクション・質問内容マスター管理</h1>
+          <Button variant="primary" className="w-38 bg-blue-700 text-white">
+            <Link href="edit_questions/assign_questions">今期の人事考課作成</Link >
           </Button>
         </div>
-
-        {/* 時系列比較テーブル */}
-        <div className="overflow-x-auto rounded-lg shadow border bg-white mb-8">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">期</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">質問内容</th>
-                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">操作</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {sectionHistory.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="text-center py-6 text-gray-400">
-                    データがありません
-                  </td>
-                </tr>
-              ) : (
-                sectionHistory.map((item) => (
-                  <tr key={item.period} className={item.period === period ? "bg-blue-50" : ""}>
-                    <td className="px-4 py-2 font-bold">{item.period}</td>
-                    <td className="px-4 py-2">
-                      <ul className="list-disc pl-4 space-y-1">
-                        {item.questions.map((q) => (
-                          <li key={q.id} className="text-sm">
-                            <span className="font-medium">{q.text}</span>
-                            <span className="ml-2 text-xs text-gray-500">（スコア: {q.score}）</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td className="px-4 py-2 text-center">
-                      {item.period === period && (
-                        <Button size="sm" variant="outline" onClick={() => setEditingCriterion(item)}>
-                          <FiEdit className="mr-1" /> 編集
-                        </Button>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+        <div className="flex flex-col overflow-y-auto h-[70vh]">
+          {typeOrder.map((type) =>
+            grouped[type]?.length ? (
+              <React.Fragment key={type}>
+                <div className="text-xl font-bold mb-3 mt-5">{type}</div>
+                {grouped[type].map((section) => (
+                  <SectionCard key={section.id} section={section} onEdit={setEditingSection} />
+                ))}
+              </React.Fragment>
+            ) : null
+          )}
+          <Button variant="default" onClick={() => setShowCreate(true)} className="w-38">
+            <FiPlus className="mr-1" /> 新規セクション作成
+          </Button>
         </div>
-
+        
         {/* 編集モーダル */}
-        {editingCriterion && (
+        {editingSection && (
           <EditModal
-            criterion={editingCriterion}
+            criterion={editingSection}
             onSave={handleSave}
-            onClose={() => setEditingCriterion(null)}
-            pastQuestions={sectionHistory.filter((h) => h.period !== period).flatMap((h) => h.questions)}
+            onClose={() => setEditingSection(null)}
+            mode="edit"
+          />
+        )}
+        {/* 新規作成モーダル */}
+        {showCreate && (
+          <EditModal
+            criterion={null}
+            onSave={handleCreate}
+            onClose={() => setShowCreate(false)}
+            mode="create"
           />
         )}
       </div>
@@ -291,4 +154,4 @@ const EvaluationSetup = () => {
   );
 };
 
-export default EvaluationSetup;
+export default EditQuestionsPage;
