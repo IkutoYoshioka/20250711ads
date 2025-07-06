@@ -26,26 +26,28 @@ export default function EditPage() {
         setEvaluatorId(user.employeeId);
 
         const detail = await fetchSavedEvaluation(evaluateeId, user.employeeId);
-        if (!detail || !detail.individual) throw new Error("被考課者データが見つかりません");
-        setIndividual(detail.individual);
+        if (!detail || !detail.sections) throw new Error("被考課者データが見つかりません");
 
-        const filteredSections = (detail.evaluationCriteria || []).filter(
-          (section) =>
-            Array.isArray(section.occupation) &&
-            Array.isArray(section.grade) &&
-            section.occupation.includes(detail.individual.occupation) &&
-            section.grade.includes(detail.individual.grade)
+        setIndividual(detail);
+
+        // 「働き方の指針」だけを抽出
+        const filteredSections = (detail.sections || []).filter(
+          (section) => section.type === "働き方の指針"
         );
         if (filteredSections.length === 0) throw new Error("該当するセクションが見つかりません");
 
         setSections(filteredSections);
         setSectionNames(filteredSections.map((section) => section.sectionName));
 
+        // 既存の回答データを復元
         const restoredFormData = {};
-        (detail.evaluationResult || []).forEach(item => {
-          restoredFormData[item.questionId] = item.score;
+        filteredSections.forEach(section => {
+          section.questions.forEach(q => {
+            restoredFormData[q.id] = q.obtainedScore !== undefined ? q.obtainedScore : null;
+          });
         });
         setFormData(restoredFormData);
+
         toast.success("データを取得しました。");
       } catch (error) {
         console.error("データの取得に失敗しました:", error);
@@ -58,7 +60,8 @@ export default function EditPage() {
   const handleAnswerChange = (questionId, value) => {
     let score;
     if (value === "可") {
-      score = sections[currentStep].questions.find((q) => q.id === questionId)?.score || 0;
+      const question = sections[currentStep].questions.find((q) => q.id === questionId);
+      score = question ? question.score : 0;
     } else if (value === "不可") {
       score = 0;
     } else if (value === "除外") {
@@ -69,9 +72,14 @@ export default function EditPage() {
 
   const saveTemporary = async () => {
     try {
-      const evaluationDetails = Object.entries(formData)
-        .filter(([_, score]) => score !== null)
-        .map(([questionId, score]) => ({ evaluatorId, evaluateeId, questionId, score }));
+      const evaluationDetails = sections.flatMap(section =>
+        section.questions.map(q => ({
+          evaluatorId,
+          evaluateeId,
+          questionId: q.id,
+          score: formData[q.id],
+        }))
+      );
       await saveEvaluation(evaluateeId, evaluatorId, evaluationDetails);
       toast.success("一時保存しました。");
     } catch (error) {
@@ -81,6 +89,10 @@ export default function EditPage() {
   };
 
   const handleSave = async () => {
+    if (!individual) {
+      toast.error("個人情報が取得できていません。");
+      return;
+    }
     const unanswered = sections.flatMap((section) =>
       section.questions.filter((q) => !(q.id in formData))
     );
@@ -88,13 +100,19 @@ export default function EditPage() {
       toast.error("すべての設問に回答してください。");
       return;
     }
-    const evaluationDetails = Object.entries(formData)
-      .filter(([_, score]) => score !== null)
-      .map(([questionId, score]) => ({ evaluatorId, evaluateeId, questionId, score }));
+    const evaluationDetails = sections.flatMap(section =>
+      section.questions.map(q => ({
+        evaluatorId,
+        evaluateeId,
+        questionId: q.id,
+        score: formData[q.id],
+      }))
+    );
     try {
       await saveEvaluation(evaluateeId, evaluatorId, evaluationDetails);
       toast.success("データが保存されました。");
-      router.push(`/eval/personal_lists/${evaluateeId}`);
+      // クエリパラメータ不要、シンプルに遷移
+      router.push(`/eval/personal_lists/workGuidelines/${evaluateeId}`);
     } catch (error) {
       console.error("保存失敗:", error);
       toast.error("保存に失敗しました。");
@@ -128,39 +146,43 @@ export default function EditPage() {
             <div ref={contentRef} className="flex-1 overflow-y-auto p-8">
               <h2 className="text-2xl font-semibold mb-6 text-gray-800">{sectionNames[currentStep]}</h2>
               <form>
-                {sections[currentStep]?.questions.map((question) => (
-                  <div key={question.id} className="mb-6 p-4 border rounded-lg shadow-sm bg-white">
-                    <p className="text-lg font-medium text-gray-700 mb-4">{question.text}</p>
-                    <div className="flex space-x-6">
-                      {["可", "不可", "除外"].map((option) => (
-                        <label
-                          key={option}
-                          className={`flex items-center px-4 py-2 border rounded-lg cursor-pointer ${
-                            (formData[question.id] === null && option === "除外") ||
-                            (formData[question.id] === 0 && option === "不可") ||
-                            (formData[question.id] === question.score && option === "可")
-                              ? "border-blue-500 bg-blue-50"
-                              : "border-gray-300"
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name={`question-${question.id}`}
-                            value={option}
-                            checked={
-                              (option === "除外" && formData[question.id] === null) ||
-                              (option === "不可" && formData[question.id] === 0) ||
-                              (option === "可" && formData[question.id] === question.score)
-                            }
-                            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                            className="hidden"
-                          />
-                          <span className="text-gray-700 font-medium">{option === "可" ? question.score : option === "不可" ? 0 : "除外"}</span>
-                        </label>
-                      ))}
+                {sections[currentStep]?.questions.length > 0 ? (
+                  sections[currentStep].questions.map((question) => (
+                    <div key={question.id} className="mb-6 p-4 border rounded-lg shadow-sm bg-white">
+                      <p className="text-lg font-medium text-gray-700 mb-4">{question.text}</p>
+                      <div className="flex space-x-6">
+                        {["可", "不可", "除外"].map((option) => (
+                          <label
+                            key={option}
+                            className={`flex items-center px-4 py-2 border rounded-lg cursor-pointer ${
+                              (formData[question.id] === null && option === "除外") ||
+                              (formData[question.id] === 0 && option === "不可") ||
+                              (formData[question.id] === question.score && option === "可")
+                                ? "border-blue-500 bg-blue-50"
+                                : "border-gray-300"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name={`question-${question.id}`}
+                              value={option}
+                              checked={
+                                (option === "除外" && formData[question.id] === null) ||
+                                (option === "不可" && formData[question.id] === 0) ||
+                                (option === "可" && formData[question.id] === question.score)
+                              }
+                              onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                              className="hidden"
+                            />
+                            <span className="text-gray-700 font-medium">{option === "可" ? question.score : option === "不可" ? 0 : "除外"}</span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-center py-8">設問がありません</div>
+                )}
               </form>
               <div className="flex justify-between mt-8 mb-20">
                 <button

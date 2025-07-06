@@ -9,7 +9,7 @@ export const feedbacks = [
     periods: [
       {
         period: "2022年度後期",
-        workGuideline: {
+        workGuidelines: {
           score: 93,
           sections: [
             {
@@ -32,7 +32,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 82,
           sections: [
             {
@@ -59,7 +59,7 @@ export const feedbacks = [
       },
        {
         period: "2023年度前期",
-        workGuideline: {
+        workGuidelines: {
           score: 93,
           sections: [
             {
@@ -82,7 +82,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 82,
           sections: [
             {
@@ -109,7 +109,7 @@ export const feedbacks = [
       },
       {
         period: "2023年度後期",
-        workGuideline: {
+        workGuidelines: {
           score: 93,
           sections: [
             {
@@ -132,7 +132,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 82,
           sections: [
             {
@@ -159,7 +159,7 @@ export const feedbacks = [
       },
       {
         period: "2024年度前期",
-        workGuideline: {
+        workGuidelines: {
           score: 85,
           sections: [
             {
@@ -182,7 +182,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 88,
           sections: [
             {
@@ -219,7 +219,7 @@ export const feedbacks = [
     periods: [
        {
         period: "2023年度前期",
-        workGuideline: {
+        workGuidelines: {
           score: 93,
           sections: [
             {
@@ -242,7 +242,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 82,
           sections: [
             {
@@ -269,7 +269,7 @@ export const feedbacks = [
       },
       {
         period: "2023年度後期",
-        workGuideline: {
+        workGuidelines: {
           score: 78,
           sections: [
             {
@@ -292,7 +292,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 80,
           sections: [
             {
@@ -319,7 +319,7 @@ export const feedbacks = [
       },
       {
         period: "2024年度前期",
-        workGuideline: {
+        workGuidelines: {
           score: 78,
           sections: [
             {
@@ -342,7 +342,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 82,
           sections: [
             {
@@ -379,7 +379,7 @@ export const feedbacks = [
     periods: [
       {
         period: "2023年度後期",
-        workGuideline: {
+        workGuidelines: {
           score: 88,
           sections: [
             {
@@ -402,7 +402,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 90,
           sections: [
             {
@@ -429,7 +429,7 @@ export const feedbacks = [
       },
       {
         period: "2024年度前期",
-        workGuideline: {
+        workGuidelines: {
           score: 92,
           sections: [
             {
@@ -452,7 +452,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 95,
           sections: [
             {
@@ -489,7 +489,7 @@ export const feedbacks = [
     periods: [
       {
         period: "2023年度後期",
-        workGuideline: {
+        workGuidelines: {
           score: 60,
           sections: [
             {
@@ -512,7 +512,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 65,
           sections: [
             {
@@ -539,7 +539,7 @@ export const feedbacks = [
       },
       {
         period: "2024年度前期",
-        workGuideline: {
+        workGuidelines: {
           score: 65,
           sections: [
             {
@@ -562,7 +562,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 70,
           sections: [
             {
@@ -599,7 +599,7 @@ export const feedbacks = [
     periods: [
       {
         period: "2023年度後期",
-        workGuideline: {
+        workGuidelines: {
           score: 50,
           sections: [
             {
@@ -622,7 +622,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 55,
           sections: [
             {
@@ -649,7 +649,7 @@ export const feedbacks = [
       },
       {
         period: "2024年度前期",
-        workGuideline: {
+        workGuidelines: {
           score: 55,
           sections: [
             {
@@ -672,7 +672,7 @@ export const feedbacks = [
             },
           ],
         },
-        performanceReview: {
+        performanceReviews: {
           score: 60,
           sections: [
             {
@@ -699,4 +699,98 @@ export const feedbacks = [
       },
     ],
   },
+];
+
+// 施設ごとの得点分布集計データのみを残す
+export const facilityScoreDistributions = [
+  {
+    facility: "本園",
+    occupation: "保育士",
+    grade: "G01",
+    category: "workGuidelines",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 3, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 0, "70-79": 0, "80-89": 1, "90-100": 2
+    },
+    total: 6,
+  },
+  {
+    facility: "本園",
+    occupation: "保育士",
+    grade: "G02",
+    category: "workGuidelines",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 3, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 0, "70-79": 3, "80-89": 1, "90-100": 2
+    },
+    total: 9,
+  },
+  {
+    facility: "本園",
+    occupation: "保育士",
+    grade: "G03",
+    category: "workGuidelines",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 0, "70-79": 3, "80-89": 1, "90-100": 2
+    },
+    total: 6,
+  },
+  {
+    facility: "本園",
+    occupation: "看護師",
+    grade: "G01",
+    category: "workGuidelines",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 5, "70-79": 19, "80-89": 6, "90-100": 2
+    },
+    total: 32,
+  },
+  {
+    facility: "本園",
+    occupation: "看護師",
+    grade: "G02",
+    category: "workGuidelines",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 5, "70-79": 19, "80-89": 6, "90-100": 2
+    },
+    total: 32,
+  },
+  {
+    facility: "本園",
+    occupation: "看護師",
+    grade: "G03",
+    category: "workGuidelines",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 5, "70-79": 7, "80-89": 6, "90-100": 2
+    },
+    total: 20,
+  },
+  {
+    facility: "分園",
+    occupation: "看護師",
+    grade: "G02",
+    category: "workGuidelines",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 1, "40-49": 0,
+      "50-59": 0, "60-69": 1, "70-79": 14, "80-89": 5, "90-100": 4
+    },
+    total: 25,
+  },
+  // 必要な組み合わせ分だけ追加
+  {
+    facility: "本園",
+    occupation: "看護師",
+    grade: "G01",
+    category: "performanceReviews",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 1, "70-79": 16, "80-89": 0, "90-100": 4
+    },
+    total: 21,
+  },
+  // ...他の施設・職種・等級・カテゴリも追加...
 ];

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import SinglePointEvaluation from "@/components/ui/layout/singlePointEvaluation";
 import TimeSeriesEvaluation from "@/components/ui/layout/timeSeriesEvaluation";
 import InterviewSheet from "@/components/ui/layout/evaluatorInterviewForm";
+import EvaluatorSelfCheck from "@/components/ui/layout/evaluatorSelfCheck";
 
 
 const PersonDetail = () => {
@@ -19,6 +20,7 @@ const PersonDetail = () => {
               <TabsTrigger value="point">１時点</TabsTrigger>
               <TabsTrigger value="timeseries">時系列</TabsTrigger>
               <TabsTrigger value="interview">面談表</TabsTrigger>
+              <TabsTrigger value="selfCheck">セルフチェック</TabsTrigger>
             </TabsList>
           
 
@@ -31,6 +33,9 @@ const PersonDetail = () => {
           </TabsContent>
           <TabsContent value="interview">
             <InterviewSheet/>
+          </TabsContent>
+          <TabsContent value="selfCheck">
+            <EvaluatorSelfCheck/>
           </TabsContent>
         </Tabs>
       </div>

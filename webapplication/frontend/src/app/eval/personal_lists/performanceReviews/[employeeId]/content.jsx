@@ -2,10 +2,11 @@ import React from "react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 export default function CommonContent({ sections = [], individual = {} }) {
-  // typeごとにグループ化
-  console.log('sections:', sections);
+  // 「働き方の指針」だけを抽出
+  const filteredSections = sections.filter(section => section.type === "業務考課");
 
-  const groupedSections = sections.reduce((acc, section) => {
+  // typeごとにグループ化（ここでは「働き方の指針」だけ）
+  const groupedSections = filteredSections.reduce((acc, section) => {
     if (!acc[section.type]) acc[section.type] = [];
     acc[section.type].push(section);
     return acc;

@@ -3,211 +3,264 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
-import { fetchFacilityFeedbacks } from "@/lib/services/feedbacks";
-import { fetchMe } from "@/lib/services/employees";
+import { fetchFacilityScoreDistributions } from "@/lib/services/feedbacks";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const categories = [
-  { key: "workGuideline", label: "働き方の指針" },
-  { key: "performanceReview", label: "業務考課" },
+  { key: "workGuidelines", label: "働き方の指針" },
+  { key: "performanceReviews", label: "業務考課" },
   { key: "totalScore", label: "総合評価" },
 ];
 
-const calculateScoreDistribution = (employees, scoreType) => {
-  const distribution = {
-    "0-9": 0,
-    "10-19": 0,
-    "20-29": 0,
-    "30-39": 0,
-    "40-49": 0,
-    "50-59": 0,
-    "60-69": 0,
-    "70-79": 0,
-    "80-89": 0,
-    "90-100": 0,
-  };
-
-  employees.forEach((person) => {
-    const score = scoreType === "totalScore"
-      ? person.periods[0]?.totalScore
-      : person.periods[0]?.[scoreType]?.score;
-    if (score == null) return;
-    if (score >= 90) distribution["90-100"]++;
-    else if (score >= 80) distribution["80-89"]++;
-    else if (score >= 70) distribution["70-79"]++;
-    else if (score >= 60) distribution["60-69"]++;
-    else if (score >= 50) distribution["50-59"]++;
-    else if (score >= 40) distribution["40-49"]++;
-    else if (score >= 30) distribution["30-39"]++;
-    else if (score >= 20) distribution["20-29"]++;
-    else if (score >= 10) distribution["10-19"]++;
-    else distribution["0-9"]++;
-  });
-
-  return distribution;
-};
+const scoreBands = [
+  "0-9", "10-19", "20-29", "30-39", "40-49",
+  "50-59", "60-69", "70-79", "80-89", "90-100"
+];
 
 const InsideFacilityAnalysis = () => {
   const [facilityOptions, setFacilityOptions] = useState([]);
-  const [periodOptions, setPeriodOptions] = useState([]);
-  const [selectedFacility, setSelectedFacility] = useState("");
-  const [selectedPeriod, setSelectedPeriod] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("workGuideline");
-  const [employees, setEmployees] = useState([]);
-  const [userOccupation, setUserOccupation] = useState("");
+  const [occupationOptions, setOccupationOptions] = useState([]);
+  const [gradeOptions, setGradeOptions] = useState([]);
+  const [selectedFacilities, setSelectedFacilities] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("workGuidelines");
+  const [selectedOccupations, setSelectedOccupations] = useState([]);
+  const [selectedGrades, setSelectedGrades] = useState([]);
+  const [distributionData, setDistributionData] = useState([]);
 
+  // 初期ロード時に全施設・職種・等級の選択肢を取得
   useEffect(() => {
-    const fetchInitialData = async () => {
-      const user = await fetchMe();
-      const isAdmin = user?.isAdmin === true;
-      const facility = user?.facility;
-      setUserOccupation(user?.occupation);
-      const facilityParam = isAdmin ? "all" : facility;
-
-      const data = await fetchFacilityFeedbacks({ facility: facilityParam });
-      setEmployees(data);
-
-      const facilities = Array.from(new Set(data.map(p => p.facility)));
-      const periods = Array.from(new Set(data.flatMap(p => p.periods.map(per => per.period))));
-      periods.sort((a, b) => b.localeCompare(a, 'ja', { numeric: true }));
-
-      setFacilityOptions(isAdmin ? ["全施設", ...facilities] : [facility]);
-      setSelectedFacility(isAdmin ? "全施設" : facility);
-      setPeriodOptions(periods);
-      setSelectedPeriod(periods[0] || "");
+    const loadOptions = async () => {
+      const all = await fetchFacilityScoreDistributions({});
+      const facilities = Array.from(new Set(all.map(d => d.facility).filter(f => typeof f === "string" && f.trim() !== "")));
+      setFacilityOptions(facilities);
+      setSelectedFacilities(facilities.slice(0, 1));
+      const occupations = Array.from(new Set(all.map(d => d.occupation).filter(Boolean)));
+      setOccupationOptions(occupations);
+      setSelectedOccupations(occupations.slice(0, 1));
+      const grades = Array.from(new Set(all.map(d => d.grade).filter(Boolean)));
+      setGradeOptions(grades);
+      setSelectedGrades(grades.slice(0, 1));
     };
-
-    fetchInitialData();
+    loadOptions();
   }, []);
 
-  useEffect(() => {
-    if (!selectedFacility || !selectedPeriod) return;
-    const facilityParam = selectedFacility === "全施設" ? "all" : selectedFacility;
-    fetchFacilityFeedbacks({ facility: facilityParam, period: selectedPeriod }).then(setEmployees);
-  }, [selectedFacility, selectedPeriod]);
-
-  const scoreDistribution = calculateScoreDistribution(employees, selectedCategory);
-  const labels = Object.keys(scoreDistribution);
-  const values = Object.values(scoreDistribution);
-
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: categories.find(c => c.key === selectedCategory).label + " (人数)",
-        data: values,
-        backgroundColor: "rgba(54, 162, 235, 0.5)",
-        borderColor: "rgba(54, 162, 235, 1)",
-        borderWidth: 1,
-        barPercentage: 0.8,
-      },
-    ],
+  // チェックボックスで施設選択
+  const handleFacilityCheck = (facility) => {
+    setSelectedFacilities((prev) =>
+      prev.includes(facility)
+        ? prev.filter(f => f !== facility)
+        : [...prev, facility]
+    );
   };
 
-  const options = {
+  // チェックボックスで職種選択
+  const handleOccupationCheck = (occupation) => {
+    setSelectedOccupations((prev) =>
+      prev.includes(occupation)
+        ? prev.filter(o => o !== occupation)
+        : [...prev, occupation]
+    );
+  };
+
+  // チェックボックスで等級選択
+  const handleGradeCheck = (grade) => {
+    setSelectedGrades((prev) =>
+      prev.includes(grade)
+        ? prev.filter(g => g !== grade)
+        : [...prev, grade]
+    );
+  };
+
+  // 施設・職種・等級の組み合わせで合算した分布を1本の折れ線として表示
+  useEffect(() => {
+    const load = async () => {
+      // 施設×職種ごとにまとめて取得し、等級は複数選択なら合算
+      const queries = [];
+      for (const facility of selectedFacilities) {
+        for (const occupation of selectedOccupations) {
+          // 等級は複数選択→まとめて取得
+          for (const grade of selectedGrades) {
+            queries.push(
+              fetchFacilityScoreDistributions({
+                facility,
+                occupation,
+                grade,
+                category: selectedCategory,
+              })
+            );
+          }
+        }
+      }
+      const results = await Promise.all(queries);
+      // 合算処理
+      // key: `${facility}-${occupation}` でまとめる
+      const groupMap = {};
+      results.flat().forEach(item => {
+        const key = `${item.facility}・${item.occupation}`;
+        if (!groupMap[key]) {
+          groupMap[key] = {
+            facility: item.facility,
+            occupation: item.occupation,
+            grades: [],
+            bands: Object.fromEntries(scoreBands.map(b => [b, 0])),
+            total: 0,
+          };
+        }
+        groupMap[key].grades.push(item.grade);
+        scoreBands.forEach(band => {
+          groupMap[key].bands[band] += item.bands[band] || 0;
+        });
+        groupMap[key].total += item.total || 0;
+      });
+      // ラベルに選択した等級をまとめて表示
+      const merged = Object.values(groupMap).map(item => ({
+        ...item,
+        label: `${item.facility}・${item.occupation}・${item.grades.join("・")}`,
+      }));
+      setDistributionData(merged);
+    };
+    if (
+      selectedFacilities.length > 0 &&
+      selectedOccupations.length > 0 &&
+      selectedGrades.length > 0
+    ) {
+      load();
+    } else {
+      setDistributionData([]);
+    }
+  }, [selectedFacilities, selectedOccupations, selectedGrades, selectedCategory]);
+
+  // グラフ用データ
+  const chartData = {
+    labels: scoreBands,
+    datasets: distributionData.map((item, idx) => ({
+      label: item.label,
+      data: scoreBands.map(band =>
+        item.total > 0 ? Math.round((item.bands[band] / item.total) * 100) : 0
+      ),
+      borderColor: [
+        "#2563eb", "#16a34a", "#f59e42", "#e11d48", "#a21caf", "#64748b", "#f43f5e", "#0ea5e9", "#fbbf24", "#22d3ee"
+      ][idx % 10],
+      backgroundColor: "rgba(0,0,0,0)",
+      tension: 0.3,
+      spanGaps: true,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+    })),
+  };
+
+  const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: "top" },
+      legend: { position: "right" },
+      title: { display: true, text: "施設ごとの得点分布（％）" },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            // 人数を取得
+            const item = distributionData[ctx.datasetIndex];
+            const band = ctx.label;
+            const count = item?.bands?.[band] ?? 0;
+            const percent = ctx.parsed.y ?? 0;
+            return `${ctx.dataset.label}: ${percent}%（${count}人）`;
+          }
+        }
+      }
     },
     scales: {
       x: { title: { display: true, text: "得点帯" } },
       y: {
-        beginAtZero: true,
-        title: { display: true, text: "人数" },
-        ticks: { stepSize: 1 },
+        min: 0,
+        max: 100,
+        title: { display: true, text: "割合（％）" },
+        ticks: { stepSize: 10, callback: v => `${v}%` },
       },
     },
   };
 
   return (
-    <div className="p-2 mx-auto max-w-6xl flex gap-8">
-      <div className="w-1/2">
-        <div className="flex space-x-4 mb-4">
-          {userOccupation === "役員" && (
-            <Select value={selectedFacility} onValueChange={setSelectedFacility}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="施設を選択" />
-              </SelectTrigger>
-              <SelectContent>
-                {facilityOptions.map((f) => (
-                  <SelectItem key={f} value={f}>{f}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-
-          <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="評価期間を選択" />
-            </SelectTrigger>
-            <SelectContent>
-              {periodOptions.map((p) => (
-                <SelectItem key={p} value={p}>{p}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="評価種別を選択" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((c) => (
-                <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
+    <div className="p-2 mx-auto max-w-5xl flex flex-col md:flex-row gap-8">
+      <div className="w-full md:w-3/4">
         <div className="bg-white p-2 rounded-lg shadow-md w-full">
-          <h3 className="text-lg font-bold mb-3">{categories.find(c => c.key === selectedCategory).label} - 得点分布</h3>
-          <div className="relative max-w-[600px] h-[370px] mx-auto">
-            <Bar data={data} options={options} />
+          <h3 className="text-lg font-bold mb-3">{categories.find(c => c.key === selectedCategory).label} - 得点分布比較</h3>
+          <div className="relative h-[420px]">
+            <Line data={chartData} options={chartOptions} />
           </div>
         </div>
       </div>
-
-      <div className="bg-white p-2 rounded-lg shadow-md w-1/2">
-        <h3 className="text-lg font-bold mb-3">施設内の職員一覧</h3>
-        <div className="overflow-y-auto max-h-[400px]">
-          <table className="w-full border-collapse border border-gray-200 text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border border-gray-300 px-4 py-2 text-left">名前</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">職種</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">働き方の指針</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">業務考課</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">総合評価</th>
-              </tr>
-            </thead>
-            <tbody>
-              {employees.map((person) => {
-                const periodData = person.periods[0];
-                return (
-                  <tr key={person.employeeId} className="hover:bg-gray-50">
-                    <td className="border border-gray-300 px-4 py-2">{person.lastName}{person.firstName}</td>
-                    <td className="border border-gray-300 px-4 py-2">{person.occupation}</td>
-                    <td className="border border-gray-300 px-4 py-2">{periodData?.workGuideline?.score ?? "-"}</td>
-                    <td className="border border-gray-300 px-4 py-2">{periodData?.performanceReview?.score ?? "-"}</td>
-                    <td className="border border-gray-300 px-4 py-2">{periodData?.totalScore ?? "-"}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+      <div className="w-full md:w-1/4 flex flex-col gap-4">
+        <div className="bg-white p-3 rounded-lg shadow-md">
+          <div className="mb-2 font-semibold">表示する施設</div>
+          <div className="flex flex-col gap-1 max-h-48 overflow-y-auto">
+            {facilityOptions.map(f => (
+              <label key={f} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={selectedFacilities.includes(f)}
+                  onChange={() => handleFacilityCheck(f)}
+                  className="accent-blue-600"
+                />
+                <span>{f}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className="bg-white p-3 rounded-lg shadow-md">
+          <div className="mb-2 font-semibold">評価種別</div>
+          <select
+            className="w-full border rounded px-2 py-1"
+            value={selectedCategory}
+            onChange={e => setSelectedCategory(e.target.value)}
+          >
+            {categories.map(c => (
+              <option key={c.key} value={c.key}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="bg-white p-3 rounded-lg shadow-md">
+          <div className="mb-2 font-semibold">職種</div>
+          <div className="flex flex-col gap-1 max-h-48 overflow-y-auto">
+            {occupationOptions.map(o => (
+              <label key={o} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={selectedOccupations.includes(o)}
+                  onChange={() => handleOccupationCheck(o)}
+                  className="accent-blue-600"
+                />
+                <span>{o}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className="bg-white p-3 rounded-lg shadow-md">
+          <div className="mb-2 font-semibold">等級</div>
+          <div className="flex flex-col gap-1 max-h-48 overflow-y-auto">
+            {gradeOptions.map(g => (
+              <label key={g} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={selectedGrades.includes(g)}
+                  onChange={() => handleGradeCheck(g)}
+                  className="accent-blue-600"
+                />
+                <span>{g}</span>
+              </label>
+            ))}
+          </div>
         </div>
       </div>
     </div>

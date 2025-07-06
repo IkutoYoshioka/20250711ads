@@ -19,15 +19,28 @@ export async function fetchAssignments(params = {}) {
 // 既存評価取得API（評価結果・点数・評価基準もここで返す設計にする）
 export async function fetchSavedEvaluation(evaluateeId, evaluatorId) {
   if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
-    // mockEvaluationResults は配列
     const evaluationData = mockEvaluationResults.find(
-      data => data.individual.employeeId === evaluateeId
+      data => data.employeeId === evaluateeId
     );
 
     if (!evaluationData) return null;
 
     return {
-      individual: evaluationData.individual,
+      firstName: evaluationData.firstName,
+      lastName: evaluationData.lastName,
+      employeeId: evaluationData.employeeId,
+      facility: evaluationData.facility,
+      occupation: evaluationData.occupation,
+      grade: evaluationData.grade,
+      workGuidelinesPrimaryEvaluatorName: evaluationData.workGuidelinesPrimaryEvaluatorName,
+      workGuidelinesSecondaryEvaluatorName: evaluationData.workGuidelinesSecondaryEvaluatorName,
+      workGuidelinesFinalEvaluatorName: evaluationData.workGuidelinesFinalEvaluatorName,
+      performanceReviewsPrimaryEvaluatorName: evaluationData.performanceReviewsPrimaryEvaluatorName,
+      performanceReviewsSecondaryEvaluatorName: evaluationData.performanceReviewsSecondaryEvaluatorName,
+      performanceReviewsFinalEvaluatorName: evaluationData.performanceReviewsFinalEvaluatorName,
+      status: evaluationData.status,
+      updatedAt: evaluationData.updatedAt,
+      // 評価基準と点数を返す
       sections: evaluationData.sections,
       sectionScores: evaluationData.sectionScores,
       scores: evaluationData.scores,
@@ -61,16 +74,16 @@ export async function fetchProgress(params = {}) {
       name: a.lastName + ' ' + a.firstName,
       facility: a.facility,
       firstEvaluators: [
-        a.workingGuidelinesPrimaryEvaluatorName,
-        a.performanceEvaluationPrimaryEvaluatorName,
+        a.workGuidelinesPrimaryEvaluatorName,
+        a.performanceReviewsPrimaryEvaluatorName,
       ],
       secondEvaluators: [
-        a.workingGuidelinesSecondaryEvaluatorName,
-        a.performanceEvaluationSecondaryEvaluatorName,
+        a.workGuidelinesSecondaryEvaluatorName,
+        a.performanceReviewsSecondaryEvaluatorName,
       ],
       finalEvaluators: [
-        a.workingGuidelinesFinalEvaluatorName,
-        a.performanceEvaluationFinalEvaluatorName,
+        a.workGuidelinesFinalEvaluatorName,
+        a.performanceReviewsFinalEvaluatorName,
       ],
       status: a.status,
     }));
@@ -78,4 +91,16 @@ export async function fetchProgress(params = {}) {
   const query = new URLSearchParams(params).toString();
   const url = query ? `/api/assignments/progress?${query}` : '/api/assignments/progress';
   return api(url, { method: 'GET' });
+}
+
+// 評価提出API（次の考課段階の人が編集できるようにする）
+export async function submitEvaluation(evaluateeId, evaluatorId, type) {
+  if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
+    // モック: ステータスを進める処理をここで実装（実際はバックエンドで管理）
+    return { success: true };
+  }
+  return api(`/api/assignments/evaluation/submit`, {
+    method: 'POST',
+    body: { evaluateeId, evaluatorId, type },
+  });
 }

@@ -1,21 +1,19 @@
 // 評価データをcriteriaとresult統合形式で
-export const mockEvaluationResults =[  
+export const mockEvaluationResults = [
   {
-    individual: {
-      employeeId: "1001",
-      lastName: "山田",
-      firstName: "太郎",
-      facility: "本園",
-      occupation: "保育士",
-      grade: "G01",
-      period: "2024年度前期",
-      status: "進行中",
-      evaluatorId: {
-        workingGuidelines: "1002",
-        performanceEvaluation: "1003",
-      },
-      updatedAt: "2025-06-01",
-    },
+    employeeId: "1001",
+    lastName: "山田",
+    firstName: "太郎",
+    facility: "本園",
+    occupation: "保育士",
+    grade: "G01",
+    workGuidelinesPrimaryEvaluatorName: "佐藤 花子",
+    workGuidelinesSecondaryEvaluatorName: "鈴木 一郎",
+    workGuidelinesFinalEvaluatorName: "田中 次郎",
+    performanceReviewsPrimaryEvaluatorName: "佐藤 花子",
+    performanceReviewsSecondaryEvaluatorName: "鈴木 一郎",
+    performanceReviewsFinalEvaluatorName: "田中 次郎",
+    status: "2次考課中",
     sections: [
       {
         sectionId: "s1",
@@ -26,7 +24,7 @@ export const mockEvaluationResults =[
             id: "q1",
             text: "自ら考えて行動したか",
             score: 10,
-            obtainedScore: 8, // 獲得点数
+            obtainedScore: 8,
           },
           {
             id: "q2",
@@ -94,7 +92,6 @@ export const mockEvaluationResults =[
         ],
       },
     ],
-    // セクションごとの合計点・獲得点数
     sectionScores: [
       {
         sectionId: "s1",
@@ -117,29 +114,26 @@ export const mockEvaluationResults =[
         obtainedScore: 15,
       },
     ],
-    // 全体の点数
     scores: {
-      workingGuidelines: 80,
-      performanceEvaluation: 87,
+      workGuidelines: 80,
+      performanceReviews: 87,
       total: 84,
     },
   },
   {
-    individual: {
-      employeeId: "A002",
-      lastName: "佐藤",
-      firstName: "花子",
-      facility: "分園",
-      occupation: "看護師",
-      grade: "G02",
-      period: "2024年度前期",
-      status: "未着手",
-      evaluatorId: {
-        workingGuidelines: "1002",
-        performanceEvaluation: "1003",
-      },
-      updatedAt: "2025-06-02",
-    },
+    employeeId: "1002",
+    lastName: "佐藤",
+    firstName: "花子",
+    facility: "分園",
+    occupation: "看護師",
+    grade: "G02",
+    workGuidelinesPrimaryEvaluatorName: "佐藤 花子",
+    workGuidelinesSecondaryEvaluatorName: "鈴木 一郎",
+    workGuidelinesFinalEvaluatorName: "田中 次郎",
+    performanceReviewsPrimaryEvaluatorName: "佐藤 花子",
+    performanceReviewsSecondaryEvaluatorName: "鈴木 一郎",
+    performanceReviewsFinalEvaluatorName: "田中 次郎",
+    status: "3次考課中",
     sections: [
       {
         sectionId: "s1",
@@ -241,27 +235,25 @@ export const mockEvaluationResults =[
       },
     ],
     scores: {
-      workingGuidelines: 70,
-      performanceEvaluation: 80,
+      workGuidelines: 70,
+      performanceReviews: 80,
       total: 75,
     },
   },
   {
-    individual: {
-      employeeId: "A003",
-      lastName: "鈴木",
-      firstName: "一郎",
-      facility: "本園",
-      occupation: "調理師",
-      grade: "G06",
-      period: "2024年度前期",
-      status: "進行中",
-      evaluatorId: {
-        workingGuidelines: "1001",
-        performanceEvaluation: "1002",
-      },
-      updatedAt: "2025-06-01",
-    },
+    employeeId: "1003",
+    lastName: "鈴木",
+    firstName: "一郎",
+    facility: "本園",
+    occupation: "調理師",
+    grade: "G01",
+    workGuidelinesPrimaryEvaluatorName: "佐藤 花子",
+    workGuidelinesSecondaryEvaluatorName: "鈴木 一郎",
+    workGuidelinesFinalEvaluatorName: "田中 次郎",
+    performanceReviewsPrimaryEvaluatorName: "佐藤 花子",
+    performanceReviewsSecondaryEvaluatorName: "鈴木 一郎",
+    performanceReviewsFinalEvaluatorName: "田中 次郎",
+    status: "完了",
     sections: [
       {
         sectionId: "s1",
@@ -363,27 +355,25 @@ export const mockEvaluationResults =[
       },
     ],
     scores: {
-      workingGuidelines: 90,
-      performanceEvaluation: 95,
+      workGuidelines: 90,
+      performanceReviews: 95,
       total: 92,
     },
   },
   {
-    individual: {
-      employeeId: "A004",
-      lastName: "田中",
-      firstName: "次郎",
-      facility: "分園",
-      occupation: "施設長",
-      grade: "G06",
-      period: "2024年度前期",
-      status: "未着手",
-      evaluatorId: {
-        workingGuidelines: "1004",
-        performanceEvaluation: "1005",
-      },
-      updatedAt: "2025-06-02",
-    },
+    employeeId: "1004",
+    lastName: "田中",
+    firstName: "次郎",
+    facility: "分園",
+    occupation: "保育士",
+    grade: "G03",
+    workGuidelinesPrimaryEvaluatorName: "高橋 三郎",
+    workGuidelinesSecondaryEvaluatorName: "田中 次郎",
+    workGuidelinesFinalEvaluatorName: "鈴木 一郎",
+    performanceReviewsPrimaryEvaluatorName: "高橋 三郎",
+    performanceReviewsSecondaryEvaluatorName: "田中 次郎",
+    performanceReviewsFinalEvaluatorName: "鈴木 一郎",
+    status: "未開始",
     sections: [
       {
         sectionId: "s1",
@@ -485,10 +475,9 @@ export const mockEvaluationResults =[
       },
     ],
     scores: {
-      workingGuidelines: 85,
-      performanceEvaluation: 90,
+      workGuidelines: 85,
+      performanceReviews: 90,
       total: 88,
     },
   },
-  // 他のemployeeIdも必要に応じて追加
 ];

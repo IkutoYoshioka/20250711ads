@@ -3,6 +3,7 @@
 import api from '@/lib/api';
 import { feedbacks as mockFeedbacks } from '@/mock_data/mockFeedbacks';
 import { mockQuestionAnalysis } from '@/mock_data/mockFeedbacksQuestions';
+import { facilityScoreDistributions } from '@/mock_data/mockFeedbacks';
 
 // 人事考課の最終結果一覧を取得（一覧ページ・施設分析ページなどで利用）
 export async function fetchFeedbacks(params = {}) {
@@ -66,4 +67,20 @@ export async function fetchQuestionAnalysisData() {
     return mockQuestionAnalysis;
   }
   return api("/api/feedbacks/question-analysis", { method: "GET" });
+}
+
+// 施設ごとの得点分布集計データ取得API
+export async function fetchFacilityScoreDistributions({ facility = '', occupation = '', grade = '', category = '' } = {}) {
+  if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
+    // 条件でフィルタ
+    return facilityScoreDistributions.filter(item =>
+      (facility === '' || item.facility === facility) &&
+      (occupation === '' || item.occupation === occupation) &&
+      (grade === '' || item.grade === grade) &&
+      (category === '' || item.category === category)
+    );
+  }
+  // API利用時
+  const query = new URLSearchParams({ facility, occupation, grade, category }).toString();
+  return api(`/api/feedbacks/facility-score-distributions?${query}`, { method: 'GET' });
 }

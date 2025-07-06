@@ -27,14 +27,17 @@ export default function AssignmentListPage() {
   // ログインユーザーが施設長かどうか
   const isFacilityManager = user && user.grade === 'G06';
 
-  // 働き方の指針ページへ遷移
+  // 働き方の指針ページへ遷移（aを引数に渡す）
   const handleWorkGuidelinesClick = (employeeId) => {
-    router.push(`/eval/personal_lists/workGuidelines_${employeeId}`);
+    router.push(
+      `/eval/personal_lists/workGuidelines/${employeeId}` 
+    );
   };
 
   // 業務考課ページへ遷移
   const handlePerformanceReviewsClick = (employeeId) => {
-    router.push(`/eval/personal_lists/performanceReviews_${employeeId}`);
+    router.push(`/eval/personal_lists/performanceReviews/${employeeId}`
+    );
   };
 
   const handleNavigateToAssignment = () => {
@@ -86,9 +89,9 @@ export default function AssignmentListPage() {
                     <td className="p-3 border-b text-center">{a.facility}</td>
                     <td className="p-3 border-b text-center">{a.occupation}</td>
                     <td className="p-3 border-b text-center">{a.grade}</td>
-                    <td className="p-3 border-b text-center">{a.workingGuidelinesPrimaryEvaluatorName}</td>
-                    <td className="p-3 border-b text-center">{a.workingGuidelinesSecondaryEvaluatorName}</td>
-                    <td className="p-3 border-b text-center">{a.workingGuidelinesFinalEvaluatorName}</td>
+                    <td className="p-3 border-b text-center">{a.workGuidelinesPrimaryEvaluatorName}</td>
+                    <td className="p-3 border-b text-center">{a.workGuidelinesSecondaryEvaluatorName}</td>
+                    <td className="p-3 border-b text-center">{a.workGuidelinesFinalEvaluatorName}</td>
                     <td className="p-3 border-b text-center">{a.status}</td>
                   </tr>
                 ))}
@@ -127,9 +130,9 @@ export default function AssignmentListPage() {
                     <td className="p-3 border-b text-center">{a.facility}</td>
                     <td className="p-3 border-b text-center">{a.occupation}</td>
                     <td className="p-3 border-b text-center">{a.grade}</td>
-                    <td className="p-3 border-b text-center">{a.performanceEvaluationPrimaryEvaluatorName}</td>
-                    <td className="p-3 border-b text-center">{a.performanceEvaluationSecondaryEvaluatorName}</td>
-                    <td className="p-3 border-b text-center">{a.performanceEvaluationFinalEvaluatorName}</td>
+                    <td className="p-3 border-b text-center">{a.performanceReviewsPrimaryEvaluatorName}</td>
+                    <td className="p-3 border-b text-center">{a.performanceReviewsSecondaryEvaluatorName}</td>
+                    <td className="p-3 border-b text-center">{a.performanceReviewsFinalEvaluatorName}</td>
                     <td className="p-3 border-b text-center">{a.status}</td>
                   </tr>
                 ))}
