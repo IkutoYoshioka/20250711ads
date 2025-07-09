@@ -70,17 +70,18 @@ export async function fetchQuestionAnalysisData() {
 }
 
 // 施設ごとの得点分布集計データ取得API
-export async function fetchFacilityScoreDistributions({ facility = '', occupation = '', grade = '', category = '' } = {}) {
+export async function fetchFacilityScoreDistributions({ facility = '', occupation = '', grade = '', category = '', period = '' } = {}) {
   if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
     // 条件でフィルタ
     return facilityScoreDistributions.filter(item =>
       (facility === '' || item.facility === facility) &&
       (occupation === '' || item.occupation === occupation) &&
       (grade === '' || item.grade === grade) &&
-      (category === '' || item.category === category)
+      (category === '' || item.category === category) &&
+      (period === '' || item.period === period)
     );
   }
   // API利用時
-  const query = new URLSearchParams({ facility, occupation, grade, category }).toString();
+  const query = new URLSearchParams({ facility, occupation, grade, category, period }).toString();
   return api(`/api/feedbacks/facility-score-distributions?${query}`, { method: 'GET' });
 }

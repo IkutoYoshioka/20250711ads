@@ -10,6 +10,15 @@ import {
 import { fetchFeedbacks } from "@/lib/services/feedbacks";
 import ProgressTable from './progress'; // 追加
 
+// 評価ランクのしきい値をユーザーが設定できるように
+const defaultRatingThresholds = {
+  S: 90,
+  A: 81,
+  B: 71,
+  C: 61,
+  D: 0,
+};
+
 const Personal = () => {
   const router = useRouter();
   const [admin, setAdmin] = useState([]);
@@ -22,6 +31,7 @@ const Personal = () => {
     rating: 'all',
     search: '',
   });
+  const [ratingThresholds, setRatingThresholds] = useState(defaultRatingThresholds);
 
   // データ取得時に period を指定
   useEffect(() => {
@@ -59,8 +69,8 @@ const Personal = () => {
             facility: person.facility,
             occupation: person.occupation,
             grade: person.grade,
-            workGuidelineScore: periodData?.workGuideline?.score ?? "-",
-            performanceReviewScore: periodData?.performanceReview?.score ?? "-",
+            workGuidelinesScore: periodData?.workGuidelines?.score ?? "-",
+            performanceReviewsScore: periodData?.performanceReviews?.score ?? "-",
             totalScore: periodData?.totalScore ?? "-",
             period: periodData?.period ?? "-",
           };
@@ -84,11 +94,12 @@ const Personal = () => {
     return ['all', ...new Set(admin.map(person => person[key]))];
   };
 
+  // 評価ランク判定
   const getRating = (score) => {
-    if (score >= 90) return 'S';
-    if (score >= 81) return 'A';
-    if (score >= 71) return 'B';
-    if (score >= 61) return 'C';
+    if (score >= ratingThresholds.S) return 'S';
+    if (score >= ratingThresholds.A) return 'A';
+    if (score >= ratingThresholds.B) return 'B';
+    if (score >= ratingThresholds.C) return 'C';
     return 'D';
   };
 
@@ -105,8 +116,36 @@ const Personal = () => {
     );
   });
 
+  // 評価ランクのしきい値を変更
+  const handleThresholdChange = (rank, value) => {
+    setRatingThresholds(prev => ({
+      ...prev,
+      [rank]: Number(value),
+    }));
+  };
+
   return (
     <div className="space-y-1">
+      {/* 評価ランクのしきい値設定 */}
+      <div className="flex flex-wrap gap-4 items-center p-2 bg-white rounded-lg mb-2">
+        <span className="font-semibold text-sm">評価ランク設定：</span>
+        {["S", "A", "B", "C"].map((rank, idx, arr) => (
+          <label key={rank} className="flex items-center gap-1 text-xs">
+            <span>{rank}：</span>
+            <input
+              type="number"
+              min={arr[idx + 1] ? ratingThresholds[arr[idx + 1]] + 1 : 0}
+              max={100}
+              value={ratingThresholds[rank]}
+              onChange={e => handleThresholdChange(rank, e.target.value)}
+              className="border rounded px-1 w-14"
+            />
+            <span>点以上</span>
+          </label>
+        ))}
+        <span className="text-xs text-gray-500">(Dは下限なし)</span>
+      </div>
+
       {/* フィルター部分 */}
       <div className="flex flex-col gap-6 sm:flex-row sm:justify-between items-center p-2 bg-white rounded-lg">
         {/* Period 表示・選択 */}
@@ -219,8 +258,8 @@ const Personal = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{person.facility}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{person.occupation}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{person.grade}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{person.workGuidelineScore}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{person.performanceReviewScore}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{person.workGuidelinesScore}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{person.performanceReviewsScore}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{person.totalScore}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600">{getRating(person.totalScore)}</td>
                   </tr>

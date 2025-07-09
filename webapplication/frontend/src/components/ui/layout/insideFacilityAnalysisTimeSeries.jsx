@@ -1,5 +1,3 @@
-// 施設内分析
-// 要修正
 "use client";
 
 import { useEffect, useState } from "react";
@@ -21,7 +19,6 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 const categories = [
   { key: "workGuidelines", label: "働き方の指針" },
   { key: "performanceReviews", label: "業務考課" },
-  { key: "totalScore", label: "総合評価" },
 ];
 
 const scoreBands = [
@@ -29,41 +26,42 @@ const scoreBands = [
   "50-59", "60-69", "70-79", "80-89", "90-100"
 ];
 
-const InsideFacilityAnalysis = () => {
+const InsideFacilityAnalysisTimeSeries = () => {
   const [facilityOptions, setFacilityOptions] = useState([]);
   const [occupationOptions, setOccupationOptions] = useState([]);
   const [gradeOptions, setGradeOptions] = useState([]);
-  const [selectedFacilities, setSelectedFacilities] = useState([]);
+  const [periodOptions, setPeriodOptions] = useState([]);
+  const [selectedFacility, setSelectedFacility] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("workGuidelines");
   const [selectedOccupations, setSelectedOccupations] = useState([]);
   const [selectedGrades, setSelectedGrades] = useState([]);
+  const [selectedPeriods, setSelectedPeriods] = useState([]);
   const [distributionData, setDistributionData] = useState([]);
 
-  // 初期ロード時に全施設・職種・等級の選択肢を取得
+  // 初期ロード時に全施設・職種・等級・期の選択肢を取得
   useEffect(() => {
     const loadOptions = async () => {
       const all = await fetchFacilityScoreDistributions({});
+      // 施設一覧
       const facilities = Array.from(new Set(all.map(d => d.facility).filter(f => typeof f === "string" && f.trim() !== "")));
       setFacilityOptions(facilities);
-      setSelectedFacilities(facilities.slice(0, 1));
+      setSelectedFacility(facilities[0] || "");
+      // 職種一覧
       const occupations = Array.from(new Set(all.map(d => d.occupation).filter(Boolean)));
       setOccupationOptions(occupations);
       setSelectedOccupations(occupations.slice(0, 1));
+      // 等級一覧
       const grades = Array.from(new Set(all.map(d => d.grade).filter(Boolean)));
       setGradeOptions(grades);
       setSelectedGrades(grades.slice(0, 1));
+      // 期一覧（降順）
+      const periods = Array.from(new Set(all.map(d => d.period).filter(Boolean)));
+      periods.sort((a, b) => b.localeCompare(a, "ja", { numeric: true }));
+      setPeriodOptions(periods);
+      setSelectedPeriods(periods.slice(0, 1)); // デフォルトで最新期のみ
     };
     loadOptions();
   }, []);
-
-  // チェックボックスで施設選択
-  const handleFacilityCheck = (facility) => {
-    setSelectedFacilities((prev) =>
-      prev.includes(facility)
-        ? prev.filter(f => f !== facility)
-        : [...prev, facility]
-    );
-  };
 
   // チェックボックスで職種選択
   const handleOccupationCheck = (occupation) => {
@@ -83,70 +81,75 @@ const InsideFacilityAnalysis = () => {
     );
   };
 
-  // 施設・職種・等級の組み合わせで合算した分布を1本の折れ線として表示
+  // チェックボックスで期選択
+  const handlePeriodCheck = (period) => {
+    setSelectedPeriods((prev) =>
+      prev.includes(period)
+        ? prev.filter(p => p !== period)
+        : [...prev, period]
+    );
+  };
+
+  // 選択した期ごとに分布を取得
   useEffect(() => {
     const load = async () => {
-      // 施設×職種ごとにまとめて取得し、等級は複数選択なら合算
-      const queries = [];
-      for (const facility of selectedFacilities) {
-        for (const occupation of selectedOccupations) {
-          // 等級は複数選択→まとめて取得
-          for (const grade of selectedGrades) {
-            queries.push(
+      if (
+        !selectedFacility ||
+        selectedOccupations.length === 0 ||
+        selectedGrades.length === 0 ||
+        selectedPeriods.length === 0
+      ) {
+        setDistributionData([]);
+        return;
+      }
+      // 選択した期ごとにデータを取得
+      const queries = selectedPeriods.map(period =>
+        Promise.all(
+          selectedOccupations.flatMap(occupation =>
+            selectedGrades.map(grade =>
               fetchFacilityScoreDistributions({
-                facility,
+                facility: selectedFacility,
                 occupation,
                 grade,
                 category: selectedCategory,
+                period,
               })
-            );
-          }
-        }
-      }
-      const results = await Promise.all(queries);
-      // 合算処理
-      // key: `${facility}-${occupation}` でまとめる
-      const groupMap = {};
-      results.flat().forEach(item => {
-        const key = `${item.facility}・${item.occupation}`;
-        if (!groupMap[key]) {
-          groupMap[key] = {
-            facility: item.facility,
-            occupation: item.occupation,
-            grades: [],
-            bands: Object.fromEntries(scoreBands.map(b => [b, 0])),
-            total: 0,
-          };
-        }
-        groupMap[key].grades.push(item.grade);
-        scoreBands.forEach(band => {
-          groupMap[key].bands[band] += item.bands[band] || 0;
+            )
+          )
+        ).then(results => ({ period, items: results.flat().filter(Boolean) }))
+      );
+      const allResults = await Promise.all(queries);
+
+      // 期ごとに合算
+      const merged = allResults.map(({ period, items }) => {
+        const bands = Object.fromEntries(scoreBands.map(b => [b, 0]));
+        let total = 0;
+        let grades = [];
+        items.forEach(item => {
+          grades.push(item.grade);
+          scoreBands.forEach(band => {
+            bands[band] += item.bands[band] || 0;
+          });
+          total += item.total || 0;
         });
-        groupMap[key].total += item.total || 0;
+        return {
+          period,
+          grades: Array.from(new Set(grades)),
+          bands,
+          total,
+        };
       });
-      // ラベルに選択した等級をまとめて表示
-      const merged = Object.values(groupMap).map(item => ({
-        ...item,
-        label: `${item.facility}・${item.occupation}・${item.grades.join("・")}`,
-      }));
+
       setDistributionData(merged);
     };
-    if (
-      selectedFacilities.length > 0 &&
-      selectedOccupations.length > 0 &&
-      selectedGrades.length > 0
-    ) {
-      load();
-    } else {
-      setDistributionData([]);
-    }
-  }, [selectedFacilities, selectedOccupations, selectedGrades, selectedCategory]);
+    load();
+  }, [selectedFacility, selectedOccupations, selectedGrades, selectedCategory, selectedPeriods]);
 
   // グラフ用データ
   const chartData = {
     labels: scoreBands,
     datasets: distributionData.map((item, idx) => ({
-      label: item.label,
+      label: item.period,
       data: scoreBands.map(band =>
         item.total > 0 ? Math.round((item.bands[band] / item.total) * 100) : 0
       ),
@@ -156,8 +159,8 @@ const InsideFacilityAnalysis = () => {
       backgroundColor: "rgba(0,0,0,0)",
       tension: 0.3,
       spanGaps: true,
-      pointRadius: 4,
-      pointHoverRadius: 6,
+      pointRadius: 3,
+      pointHoverRadius: 5,
     })),
   };
 
@@ -166,13 +169,28 @@ const InsideFacilityAnalysis = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: { position: "right" },
-      title: { display: true, text: "施設ごとの得点分布（％）" },
+      title: {
+        display: true,
+        text: `${selectedFacility}の得点分布（％）期別比較`
+      },
       tooltip: {
         callbacks: {
+          title: (ctx) => {
+            // 期情報をタイトルに
+            return `期: ${ctx[0].dataset.label}`;
+          },
+          beforeBody: () => {
+            // 選択中の条件を明記
+            return [
+              `施設: ${selectedFacility}`,
+              `評価種別: ${categories.find(c => c.key === selectedCategory)?.label ?? ""}`,
+              `職種: ${selectedOccupations.join(", ") || "全て"}`,
+              `等級: ${selectedGrades.join(", ") || "全て"}`
+            ].join(" / ");
+          },
           label: (ctx) => {
-            // 人数を取得
-            const item = distributionData[ctx.datasetIndex];
             const band = ctx.label;
+            const item = distributionData[ctx.datasetIndex];
             const count = item?.bands?.[band] ?? 0;
             const percent = ctx.parsed.y ?? 0;
             return `${ctx.dataset.label}: ${percent}%（${count}人）`;
@@ -195,28 +213,27 @@ const InsideFacilityAnalysis = () => {
     <div className="p-2 mx-auto max-w-5xl flex flex-col md:flex-row gap-8">
       <div className="w-full md:w-3/4">
         <div className="bg-white p-2 rounded-lg shadow-md w-full">
-          <h3 className="text-lg font-bold mb-3">{categories.find(c => c.key === selectedCategory).label} - 得点分布比較</h3>
+          <h3 className="text-lg font-bold mb-3">
+            {categories.find(c => c.key === selectedCategory).label} - 得点分布期別比較
+          </h3>
           <div className="relative h-[420px]">
             <Line data={chartData} options={chartOptions} />
           </div>
         </div>
       </div>
-      <div className="w-full md:w-1/4 flex flex-col gap-4">
+      {/* 右側の操作パネルだけスクロール可能に */}
+      <div className="w-full md:w-1/4 flex flex-col gap-4 max-h-[500px] overflow-y-auto pb-6">
         <div className="bg-white p-3 rounded-lg shadow-md">
-          <div className="mb-2 font-semibold">表示する施設</div>
-          <div className="flex flex-col gap-1 max-h-48 overflow-y-auto">
+          <div className="mb-2 font-semibold">施設</div>
+          <select
+            className="w-full border rounded px-2 py-1"
+            value={selectedFacility}
+            onChange={e => setSelectedFacility(e.target.value)}
+          >
             {facilityOptions.map(f => (
-              <label key={f} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={selectedFacilities.includes(f)}
-                  onChange={() => handleFacilityCheck(f)}
-                  className="accent-blue-600"
-                />
-                <span>{f}</span>
-              </label>
+              <option key={f} value={f}>{f}</option>
             ))}
-          </div>
+          </select>
         </div>
         <div className="bg-white p-3 rounded-lg shadow-md">
           <div className="mb-2 font-semibold">評価種別</div>
@@ -262,9 +279,25 @@ const InsideFacilityAnalysis = () => {
             ))}
           </div>
         </div>
+        <div className="bg-white p-3 rounded-lg shadow-md">
+          <div className="mb-2 font-semibold">期</div>
+          <div className="flex flex-col gap-1 max-h-48 overflow-y-auto">
+            {periodOptions.map(p => (
+              <label key={p} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={selectedPeriods.includes(p)}
+                  onChange={() => handlePeriodCheck(p)}
+                  className="accent-blue-600"
+                />
+                <span>{p}</span>
+              </label>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default InsideFacilityAnalysis;
+export default InsideFacilityAnalysisTimeSeries;

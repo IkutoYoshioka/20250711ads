@@ -708,6 +708,7 @@ export const facilityScoreDistributions = [
     occupation: "保育士",
     grade: "G01",
     category: "workGuidelines",
+    period: "2024年度前期",
     bands: {
       "0-9": 0, "10-19": 0, "20-29": 3, "30-39": 0, "40-49": 0,
       "50-59": 0, "60-69": 0, "70-79": 0, "80-89": 1, "90-100": 2
@@ -719,6 +720,7 @@ export const facilityScoreDistributions = [
     occupation: "保育士",
     grade: "G02",
     category: "workGuidelines",
+    period: "2024年度前期",
     bands: {
       "0-9": 0, "10-19": 0, "20-29": 3, "30-39": 0, "40-49": 0,
       "50-59": 0, "60-69": 0, "70-79": 3, "80-89": 1, "90-100": 2
@@ -730,6 +732,7 @@ export const facilityScoreDistributions = [
     occupation: "保育士",
     grade: "G03",
     category: "workGuidelines",
+    period: "2024年度前期",
     bands: {
       "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 0, "40-49": 0,
       "50-59": 0, "60-69": 0, "70-79": 3, "80-89": 1, "90-100": 2
@@ -738,9 +741,83 @@ export const facilityScoreDistributions = [
   },
   {
     facility: "本園",
+    occupation: "保育士",
+    grade: "G01",
+    category: "workGuidelines",
+    period: "2023年度後期",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 3, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 0, "70-79": 0, "80-89": 1, "90-100": 2
+    },
+    total: 6,
+  },
+  {
+    facility: "本園",
+    occupation: "保育士",
+    grade: "G02",
+    category: "workGuidelines",
+    period: "2023年度後期",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 3, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 0, "70-79": 3, "80-89": 1, "90-100": 2
+    },
+    total: 9,
+  },
+  {
+    facility: "本園",
+    occupation: "保育士",
+    grade: "G03",
+    category: "workGuidelines",
+    period: "2023年度後期",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 0, "70-79": 3, "80-89": 1, "90-100": 2
+    },
+    total: 6,
+  },
+  {
+    facility: "本園",
+    occupation: "保育士",
+    grade: "G01",
+    category: "workGuidelines",
+    period: "2023年度前期",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 3, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 0, "70-79": 0, "80-89": 1, "90-100": 2
+    },
+    total: 6,
+  },
+  {
+    facility: "本園",
+    occupation: "保育士",
+    grade: "G02",
+    category: "workGuidelines",
+    period: "2023年度前期",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 3, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 0, "70-79": 3, "80-89": 1, "90-100": 2
+    },
+    total: 9,
+  },
+  {
+    facility: "本園",
+    occupation: "保育士",
+    grade: "G03",
+    category: "workGuidelines",
+    period: "2023年度前期",
+    bands: {
+      "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 0, "40-49": 0,
+      "50-59": 0, "60-69": 0, "70-79": 3, "80-89": 1, "90-100": 2
+    },
+    total: 6,
+  },
+
+  {
+    facility: "本園",
     occupation: "看護師",
     grade: "G01",
     category: "workGuidelines",
+    period: "2024年度前期",
     bands: {
       "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 0, "40-49": 0,
       "50-59": 0, "60-69": 5, "70-79": 19, "80-89": 6, "90-100": 2
@@ -752,6 +829,7 @@ export const facilityScoreDistributions = [
     occupation: "看護師",
     grade: "G02",
     category: "workGuidelines",
+    period: "2024年度前期",
     bands: {
       "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 0, "40-49": 0,
       "50-59": 0, "60-69": 5, "70-79": 19, "80-89": 6, "90-100": 2
@@ -763,6 +841,7 @@ export const facilityScoreDistributions = [
     occupation: "看護師",
     grade: "G03",
     category: "workGuidelines",
+    period: "2024年度前期",
     bands: {
       "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 0, "40-49": 0,
       "50-59": 0, "60-69": 5, "70-79": 7, "80-89": 6, "90-100": 2
@@ -774,6 +853,7 @@ export const facilityScoreDistributions = [
     occupation: "看護師",
     grade: "G02",
     category: "workGuidelines",
+    period: "2024年度前期",
     bands: {
       "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 1, "40-49": 0,
       "50-59": 0, "60-69": 1, "70-79": 14, "80-89": 5, "90-100": 4
@@ -786,6 +866,7 @@ export const facilityScoreDistributions = [
     occupation: "看護師",
     grade: "G01",
     category: "performanceReviews",
+    period: "2024年度前期",
     bands: {
       "0-9": 0, "10-19": 0, "20-29": 0, "30-39": 0, "40-49": 0,
       "50-59": 0, "60-69": 1, "70-79": 16, "80-89": 0, "90-100": 4

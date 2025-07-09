@@ -13,7 +13,7 @@ const TimeSeriesEvaluation = () => {
   const params = useParams();
   const employeeId = params?.employeeId;
   const [personData, setPersonData] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('workGuideline');
+  const [selectedCategory, setSelectedCategory] = useState('workGuidelines');
   const [selectedSections, setSelectedSections] = useState([]);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const TimeSeriesEvaluation = () => {
     labels: periods,
     datasets: [
       {
-        label: selectedCategory === 'workGuideline' ? '働き方の指針' : '業務考課',
+        label: selectedCategory === 'workGuidelines' ? '働き方の指針' : '業務考課',
         data: periodsArr.map((p) => p[selectedCategory]?.score ?? null),
         borderColor: 'rgba(54, 162, 235, 1)',
         backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -100,6 +100,15 @@ const TimeSeriesEvaluation = () => {
     layout: { padding: { left: 10, right: 10 } },
   };
 
+  // セクションのチェック切り替え関数を追加
+  const toggleSection = (section) => {
+    setSelectedSections((prev) =>
+      prev.includes(section)
+        ? prev.filter((s) => s !== section)
+        : [...prev, section]
+    );
+  };
+
   return (
     <div className="grid grid-cols-2 gap-4 p-2">
       {/* カテゴリー選択 */}
@@ -110,15 +119,15 @@ const TimeSeriesEvaluation = () => {
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
-          <option value="workGuideline">働き方の指針</option>
-          <option value="performanceReview">業務考課</option>
+          <option value="workGuidelines">働き方の指針</option>
+          <option value="performanceReviews">業務考課</option>
         </select>
       </div>
 
       {/* 左側: 全体推移の折れ線グラフ */}
       <div className="bg-white p-4 pb-20 rounded-lg shadow-md h-[420px] flex flex-col">
         <h2 className="text-lg font-bold mb-2">{personData.lastName}{personData.firstName} の時系列推移</h2>
-        <h3 className="text-md font-semibold mb-2">({selectedCategory === 'workGuideline' ? '働き方の指針' : '業務考課'})</h3>
+        <h3 className="text-md font-semibold mb-2">({selectedCategory === 'workGuidelines' ? '働き方の指針' : '業務考課'})</h3>
         <Line data={overallChartData} options={options} />
       </div>
 

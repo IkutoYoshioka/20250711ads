@@ -19,7 +19,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 const TimeSeriesEvaluation = () => {
   const [personData, setPersonData] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('workGuideline');
+  const [selectedCategory, setSelectedCategory] = useState('workGuidelines');
   const [selectedSections, setSelectedSections] = useState([]);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const TimeSeriesEvaluation = () => {
     labels: periods,
     datasets: [
       {
-        label: selectedCategory === 'workGuideline' ? '働き方の指針' : '業務考課',
+        label: selectedCategory === 'workGuidelines' ? '働き方の指針' : '業務考課',
         data: periodsArr.map(p => p[selectedCategory]?.score ?? null),
         borderColor: 'rgba(54, 162, 235, 1)',
         backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -130,15 +130,15 @@ const TimeSeriesEvaluation = () => {
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
-          <option value="workGuideline">働き方の指針</option>
-          <option value="performanceReview">業務考課</option>
+          <option value="workGuidelines">働き方の指針</option>
+          <option value="performanceReviews">業務考課</option>
         </select>
       </div>
 
       <div className="bg-white p-4 pb-20 rounded-lg shadow-md h-[420px] flex flex-col">
         <h2 className="text-lg font-bold mb-2">{personData.lastName}{personData.firstName} の時系列推移</h2>
         <h3 className="text-md font-semibold mb-2">
-          ({selectedCategory === 'workGuideline' ? '働き方の指針' : '業務考課'})
+          ({selectedCategory === 'workGuidelines' ? '働き方の指針' : '業務考課'})
         </h3>
         <Line data={overallChartData} options={options} />
       </div>

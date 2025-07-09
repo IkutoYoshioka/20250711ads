@@ -15,6 +15,10 @@ const AccountPage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // 取得済み資格の編集用
+  const [editLicenses, setEditLicenses] = useState(false);
+  const [licensesObtainedInput, setLicensesObtainedInput] = useState("");
+
   useEffect(() => {
     const loadUser = async () => {
       try {
@@ -25,6 +29,7 @@ const AccountPage = () => {
         }
         setUserInfo(user);
         setFutureLicenses(Array.isArray(user.licensesFuture) ? user.licensesFuture : []);
+        setLicensesObtainedInput(user.licensesObtained || "");
       } catch (error) {
         console.error("ユーザー情報の取得失敗:", error);
         toast.error("データの取得に失敗しました。");
@@ -32,6 +37,8 @@ const AccountPage = () => {
     };
     loadUser();
   }, []);
+
+  console.log("アカウント情報", userInfo);
 
   const handleFutureLicenseChange = (index, field, value) => {
     const updatedLicenses = futureLicenses.map((license, i) =>
@@ -62,6 +69,28 @@ const AccountPage = () => {
         ? `${prev.licensesObtained}, ${obtainedLicense.name}`
         : obtainedLicense.name,
     }));
+  };
+
+  // 取得済み資格の編集保存
+  const handleSaveLicensesObtained = () => {
+    setUserInfo((prev) => ({
+      ...prev,
+      licensesObtained: licensesObtainedInput,
+    }));
+    setEditLicenses(false);
+    toast.success("取得済み資格を更新しました");
+  };
+
+  // 取得済み資格の削除
+  const handleDeleteObtainedLicense = (index) => {
+    const arr = (licensesObtainedInput || "").split(",").map(s => s.trim()).filter(Boolean);
+    arr.splice(index, 1);
+    setLicensesObtainedInput(arr.join(", "));
+  };
+
+  // 今後取得予定の資格の削除
+  const handleDeleteFutureLicense = (index) => {
+    setFutureLicenses(futureLicenses.filter((_, i) => i !== index));
   };
 
   const handleSave = async () => {
@@ -167,7 +196,6 @@ const AccountPage = () => {
         <Card className="bg-white shadow-lg">
           <CardContent className="space-y-6">
             <h3 className="text-lg font-semibold pt-4">パーソナル情報</h3>
-            {/* <p className="text-sm text-gray-600">この情報は施設長と共有されます</p> */}
 
             {/* Email & Phone */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -176,6 +204,9 @@ const AccountPage = () => {
                 <Input
                   value={userInfo.email}
                   onChange={(e) => handleUserInfoChange("email", e.target.value)}
+                  type="email"
+                  placeholder="メールアドレス"
+                  autoComplete="email"
                 />
               </div>
               <div>
@@ -183,18 +214,72 @@ const AccountPage = () => {
                 <Input
                   value={userInfo.phone}
                   onChange={(e) => handleUserInfoChange("phone", e.target.value)}
+                  type="tel"
+                  placeholder="電話番号"
+                  autoComplete="tel"
                 />
               </div>
             </div>
 
             {/* 取得済みの資格 */}
             <div>
-              <label className="text-sm text-gray-600">取得済みの資格</label>
+              <label className="text-sm text-gray-600 flex items-center gap-2">
+                取得済みの資格
+                {!editLicenses && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="ml-2 px-2 py-1 text-xs"
+                    onClick={() => setEditLicenses(true)}
+                  >
+                    編集
+                  </Button>
+                )}
+              </label>
               <div className="bg-gray-100 p-3 rounded-md">
-                {userInfo.licensesObtained ? (
-                  <ul className="list-disc list-inside">
-                    {userInfo.licensesObtained.split(", ").map((license, index) => (
-                      <li key={index}>{license}</li>
+                {editLicenses ? (
+                  <div>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {(licensesObtainedInput || "")
+                        .split(",")
+                        .map(s => s.trim())
+                        .filter(Boolean)
+                        .map((license, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs"
+                          >
+                            {license}
+                            <button
+                              type="button"
+                              className="ml-1 text-red-500 hover:text-red-700"
+                              onClick={() => handleDeleteObtainedLicense(idx)}
+                              aria-label="削除"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                    </div>
+                    <Input
+                      value={licensesObtainedInput}
+                      onChange={e => setLicensesObtainedInput(e.target.value)}
+                      placeholder="カンマ区切りで入力（例: 保育士, 看護師）"
+                      className="mb-2"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={handleSaveLicensesObtained} className="bg-blue-600 text-white">
+                        保存
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => { setEditLicenses(false); setLicensesObtainedInput(userInfo.licensesObtained || ""); }}>
+                        キャンセル
+                      </Button>
+                    </div>
+                  </div>
+                ) : userInfo.licensesObtained ? (
+                  <ul className="flex flex-wrap gap-2">
+                    {userInfo.licensesObtained.split(",").map((license, index) => (
+                      <li key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">{license.trim()}</li>
                     ))}
                   </ul>
                 ) : (
@@ -231,13 +316,22 @@ const AccountPage = () => {
                         handleFutureLicenseChange(index, "reason", e.target.value)
                       }
                     />
-                    <Button
-                      variant="outline"
-                      className="bg-green-500 text-white"
-                      onClick={() => handleObtainLicense(index)}
-                    >
-                      取得
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="bg-green-500 text-white"
+                        onClick={() => handleObtainLicense(index)}
+                      >
+                        取得
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="bg-red-500 text-white"
+                        onClick={() => handleDeleteFutureLicense(index)}
+                      >
+                        削除
+                      </Button>
+                    </div>
                   </div>
                 ))
               ) : (

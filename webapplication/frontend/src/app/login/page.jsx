@@ -34,6 +34,9 @@ export default function LoginPage() {
       // 認証APIを呼び出し（cookieで管理）
       const user = await login(employeeCode, password);
 
+      // ★ここでemployeeIdをtokenとしてクッキーに保存
+      document.cookie = `token=${user.employeeId}; path=/`;
+
       // 等級に応じて遷移先を決定
       switch (user.grade) {
         case "X01":  

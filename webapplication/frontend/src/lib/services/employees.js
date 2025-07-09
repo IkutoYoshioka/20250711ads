@@ -6,8 +6,13 @@ import { mockUsers } from '@/mock_data/mockUsers';
 export async function fetchMe(token) {
   // モック利用時
   if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
-    // トークンがなくてもモックを返す
-    return mockUsers[1]; // eval[1],admin[2],noneval[3]
+    // トークンがemployeeIdとして渡されている場合
+    if (token) {
+      const user = mockUsers.find(user => String(user.employeeId) === String(token));
+      if (user) return user;
+    }
+    // トークンがなければ1番目を返す（0番目が管理者などの場合は適宜変更）
+    return mockUsers[0];
   }
   // 本番API
   if (!token) return null;
