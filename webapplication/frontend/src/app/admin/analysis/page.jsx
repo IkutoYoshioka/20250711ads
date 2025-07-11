@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import InsideFacilityAnalysis from '@/components/ui/layout/insideFacilityAnalysis';
+import InsideFacilityAnalysis from '@/components/ui/layout/insideFacilityAnalysisCrossSection';
 import QuestionAnalysis from '@/components/ui/layout/questionAnalysis';
 import Link from 'next/link';
 

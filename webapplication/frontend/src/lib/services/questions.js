@@ -1,5 +1,5 @@
 import api from "@/lib/api";
-import { mockCriteria } from "@/mock_data/mockCriteria";
+import { mockCriteria, mockPastAssignments } from "@/mock_data/mockCriteria";
 
 // 人事考課の質問関連
 
@@ -23,4 +23,12 @@ export async function updateEvaluationCriterion(criterion) {
     method: "PUT",
     body: criterion,
   });
+}
+
+// 過去の質問割り当て取得API
+export async function fetchPastAssignments() {
+  if (process.env.NEXT_PUBLIC_USE_MOCK === "true") {
+    return mockPastAssignments;
+  }
+  return api("/evaluationCriteria/pastAssignments", { method: "GET" });
 }

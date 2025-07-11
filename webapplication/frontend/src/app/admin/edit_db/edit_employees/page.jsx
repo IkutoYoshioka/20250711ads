@@ -10,7 +10,7 @@ import { fetchEmployees, updateEmployee } from "@/lib/services/employees";
 import { toast, Toaster } from "sonner";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
-const ITEMS_PER_PAGE = 9; // 1ページに表示する件数
+const ITEMS_PER_PAGE = 8; // 1ページに表示する件数
 
 const EditDB = () => {
   const [employees, setEmployees] = useState([]);
@@ -76,7 +76,7 @@ const EditDB = () => {
   };
 
   return (
-    <div className="pt-3 pl-3">
+    <div className="p-3">
       <Toaster position="top-right" richColors />
       <h1 className="text-2xl font-bold mb-2 text-gray-800">従業員情報管理</h1>
 

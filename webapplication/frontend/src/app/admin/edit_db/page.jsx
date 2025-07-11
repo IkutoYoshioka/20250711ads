@@ -66,7 +66,7 @@ const page = () => {
                 {/* 右下に固定配置ボタン */}
                 <Button
                 asChild
-                className="absolute bottom-4 right-4"
+                className="absolute bottom-4 right-4 pointer-events-none opacity-50 disabled:pointer-events-none disabled:opacity-50"
                 >
                     <Link href="/admin/edit_db/edit_surveys">
                         編集画面へ
@@ -86,7 +86,7 @@ const page = () => {
                 {/* 右下に固定配置ボタン */}
                 <Button
                 asChild
-                className="absolute bottom-4 right-4"
+                className="absolute bottom-4 right-4 pointer-events-none opacity-50 disabled:pointer-events-none disabled:opacity-50"
                 >
                     <Link href="/admin/edit_db/edit_notifications">
                         編集画面へ

@@ -6,8 +6,19 @@ import { mockUsers } from '@/mock_data/mockUsers';
 export async function fetchMe(token) {
   // モック利用時
   if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
-    // トークンがなくてもモックを返す
-    return mockUsers[2]; // 例: 管理者
+    // loginTypeをクッキーから取得
+    let loginType = undefined;
+    if (typeof document !== "undefined") {
+      const match = document.cookie.match(/(?:^|; )loginType=([^;]*)/);
+      if (match) loginType = decodeURIComponent(match[1]);
+    }
+    if (token) {
+      const user = mockUsers.find(user => String(user.employeeId) === String(token));
+      if (user) {
+        return { ...user, loginType }; // ←ここでloginTypeをセット
+      }
+    }
+    return { ...mockUsers[0], loginType };
   }
   // 本番API
   if (!token) return null;

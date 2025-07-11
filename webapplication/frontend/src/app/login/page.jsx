@@ -34,6 +34,9 @@ export default function LoginPage() {
       // 認証APIを呼び出し（cookieで管理）
       const user = await login(employeeCode, password);
 
+      // ★ここでemployeeIdをtokenとしてクッキーに保存
+      document.cookie = `token=${user.employeeId}; path=/`;
+
       // 等級に応じて遷移先を決定
       switch (user.grade) {
         case "X01":  
@@ -56,6 +59,64 @@ export default function LoginPage() {
     <div className="flex h-screen bg-gray-100">
       {/* 左側：ログインフォーム */}
       <div className="flex w-full items-center justify-center bg-white">
+        <div className='text-sm w-1/2'>
+          <p className='text-red-600'>一時的に載せています。以下のユーザーにログインできます。社員IDにemployeeCodeを入力して下さい。</p>
+          <p>
+            ➀非考課者
+            "employeeId": "6061",
+            "employeeCode": "E11241",
+            "lastName": "太田",
+            "firstName": "あすか",
+            "password": "password",
+            "isAdmin": false,
+            "grade": "G02",
+            "occupation": "看護師",
+            "facility": "はちまんの風",
+          </p>
+          <p>
+            ➁施設長
+            "employeeId": "6033",
+            "employeeCode": "E98916",
+            "lastName": "山田",
+            "firstName": "拓真",
+            "password": "password",
+            "isAdmin": false,
+            "grade": "G06",
+            "occupation": "施設長",
+            "facility": "八幡デイ・サービスセンター",
+            "employeeId": "6076",
+          </p>
+          <p>
+            ➂役員
+            "employeeId": "6076",
+            "employeeCode": "E27338",
+            "lastName": "遠藤",
+            "firstName": "明美",
+            "password": "password",
+            "isAdmin": true,
+            "grade": "X01",
+            "occupation": "役員",
+            "facility": "本部",
+          </p>
+          <p>
+            ➃考課者
+            "employeeId": "6048",
+            "employeeCode": "E94275",
+            "lastName": "鈴木",
+            "firstName": "くみ子",
+            "password": "password",
+            "isAdmin": false,
+            "grade": "G04",
+            "occupation": "訪問員",
+            "facility": "エクレール青葉",
+          </p>
+          <p>
+            ・このログインページからは、非考課者は「非考課者」ページに、施設長・役員・考課者は「考課者」ページに遷移します。（考課者ページは等級により一部機能が異なります。）
+          </p>
+          <p>
+            ・isAdminがtrueのユーザーは、管理者ログインページから管理者アカウントへログインできます。（ここでは➂のみ）
+          </p>
+        </div>
         <Card className="w-full max-w-md p-8 shadow-lg rounded-lg">
           <CardHeader>
             <h1 className="text-center text-3xl font-bold text-gray-800 mb-2">

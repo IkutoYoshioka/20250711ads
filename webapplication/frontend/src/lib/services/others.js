@@ -1,3 +1,5 @@
+import { mockOccupationGradePairs } from "@/mock_data/mockOthers";
+
 // 疑似API: お知らせ一覧取得
 export async function fetchNotifications() {
   // 実際は fetch('/api/notifications') などに置き換え
@@ -34,4 +36,10 @@ export async function fetchEvaluationPeriod() {
     end: "2025-06-30",
     description: "2025年度上期の評価期間"
   };
+}
+
+// 職種・等級の組み合わせ取得API
+export async function fetchOccupationGradePairs() {
+  // 実際は fetch('/api/occupation-grade-pairs') などに置き換え
+  return mockOccupationGradePairs;
 }

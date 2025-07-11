@@ -24,7 +24,7 @@ const SinglePointEvaluation = () => {
   const employeeId = params?.employeeId;
   const [personData, setPersonData] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('workGuideline');
+  const [selectedCategory, setSelectedCategory] = useState('workGuidelines');
 
   useEffect(() => {
     if (!employeeId) return;
@@ -47,30 +47,30 @@ const SinglePointEvaluation = () => {
   const prevPeriod = periods[currentIdx - 1]; // 1つ前が前期
 
   // 前期比情報を取得
-  const workGuidelineDiff = prevPeriod
-    ? getDiffInfo(selectedPeriod.workGuideline.score, prevPeriod.workGuideline.score)
+  const workGuidelinesDiff = prevPeriod
+    ? getDiffInfo(selectedPeriod.workGuidelines.score, prevPeriod.workGuidelines.score)
     : null;
-  const performanceReviewDiff = prevPeriod
-    ? getDiffInfo(selectedPeriod.performanceReview.score, prevPeriod.performanceReview.score)
+  const performanceReviewsDiff = prevPeriod
+    ? getDiffInfo(selectedPeriod.performanceReviews.score, prevPeriod.performanceReviews.score)
     : null;
   const totalScoreDiff = prevPeriod
     ? getDiffInfo(selectedPeriod.totalScore, prevPeriod.totalScore)
     : null;
 
   // 選択されたカテゴリーのデータ
-  const selectedData = selectedCategory === 'workGuideline'
-    ? selectedPeriod.workGuideline
-    : selectedPeriod.performanceReview;
+  const selectedData = selectedCategory === 'workGuidelines'
+    ? selectedPeriod.workGuidelines
+    : selectedPeriod.performanceReviews;
 
   // グラフデータ
   const chartData = {
     labels: selectedData.sections.map(sec => sec.section),
     datasets: [
       {
-        label: selectedCategory === 'workGuideline' ? '働き方の指針 - セクション得点率' : '業務考課 - セクション得点率',
+        label: selectedCategory === 'workGuidelines' ? '働き方の指針 - セクション得点率' : '業務考課 - セクション得点率',
         data: selectedData.sections.map(sec => sec.score),
-        backgroundColor: selectedCategory === 'workGuideline' ? 'rgba(54, 162, 235, 0.6)' : 'rgba(255, 99, 132, 0.6)',
-        borderColor: selectedCategory === 'workGuideline' ? 'rgba(54, 162, 235, 1)' : 'rgba(255, 99, 132, 1)',
+        backgroundColor: selectedCategory === 'workGuidelines' ? 'rgba(54, 162, 235, 0.6)' : 'rgba(255, 99, 132, 0.6)',
+        borderColor: selectedCategory === 'workGuidelines' ? 'rgba(54, 162, 235, 1)' : 'rgba(255, 99, 132, 1)',
         borderWidth: 1,
       },
     ],
@@ -87,20 +87,20 @@ const SinglePointEvaluation = () => {
           </CardHeader>
           <CardContent>
             <p className="text-xl font-semibold flex items-center gap-2">
-              働き方の指針: {selectedPeriod.workGuideline.score}
-              {workGuidelineDiff && (
-                <span className={`ml-2 flex items-center ${workGuidelineDiff.color}`}>
-                  {workGuidelineDiff.icon}
-                  <span className="ml-1 text-base">{Math.abs(workGuidelineDiff.diff)}pt</span>
+              働き方の指針: {selectedPeriod.workGuidelines.score}
+              {workGuidelinesDiff && (
+                <span className={`ml-2 flex items-center ${workGuidelinesDiff.color}`}>
+                  {workGuidelinesDiff.icon}
+                  <span className="ml-1 text-base">{Math.abs(workGuidelinesDiff.diff)}pt</span>
                 </span>
               )}
             </p>
             <p className="text-xl font-semibold flex items-center gap-2">
-              業務考課: {selectedPeriod.performanceReview.score}
-              {performanceReviewDiff && (
-                <span className={`ml-2 flex items-center ${performanceReviewDiff.color}`}>
-                  {performanceReviewDiff.icon}
-                  <span className="ml-1 text-base">{Math.abs(performanceReviewDiff.diff)}pt</span>
+              業務考課: {selectedPeriod.performanceReviews.score}
+              {performanceReviewsDiff && (
+                <span className={`ml-2 flex items-center ${performanceReviewsDiff.color}`}>
+                  {performanceReviewsDiff.icon}
+                  <span className="ml-1 text-base">{Math.abs(performanceReviewsDiff.diff)}pt</span>
                 </span>
               )}
             </p>
@@ -122,7 +122,7 @@ const SinglePointEvaluation = () => {
             <CardTitle>
               <div className="flex items-center justify-between">
                 <span>
-                  {selectedCategory === 'workGuideline' ? '働き方の指針' : '業務考課'} - セクション得点率
+                  {selectedCategory === 'workGuidelines' ? '働き方の指針' : '業務考課'} - セクション得点率
                 </span>
                 {/* タブの右側に選択UI */}
                 <div className="flex items-center space-x-2">
@@ -145,8 +145,8 @@ const SinglePointEvaluation = () => {
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                   >
-                    <option value="workGuideline">働き方の指針</option>
-                    <option value="performanceReview">業務考課</option>
+                    <option value="workGuidelines">働き方の指針</option>
+                    <option value="performanceReviews">業務考課</option>
                   </select>
                 </div>
               </div>
