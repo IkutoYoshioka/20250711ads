@@ -7,7 +7,7 @@ import { Bar } from 'react-chartjs-2';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { fetchFeedbackByEmployeeId } from '@/lib/services/feedbacks';
-import { fetchMe } from '@/lib/services/employees';
+import { useUser } from '@/context/UserContext';
 import React, { useState, useEffect } from 'react';
 
 // Chart.js の登録
@@ -22,6 +22,7 @@ const getDiffInfo = (current, prev) => {
 };
 
 const SinglePointEvaluation = () => {
+  const user = useUser();
   const [personData, setPersonData] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('workGuidelines');
@@ -29,8 +30,7 @@ const SinglePointEvaluation = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const me = await fetchMe();
-        const employeeId = me?.employeeId;
+        const employeeId = user?.employeeId;
         if (!employeeId) throw new Error("employeeId が取得できません");
 
         const data = await fetchFeedbackByEmployeeId(employeeId);
@@ -40,8 +40,10 @@ const SinglePointEvaluation = () => {
       }
     };
 
-    loadData();
-  }, []);
+    if (user) {
+      loadData();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (personData?.periods?.length > 0) {

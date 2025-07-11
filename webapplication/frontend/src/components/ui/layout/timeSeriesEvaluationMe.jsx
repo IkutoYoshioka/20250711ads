@@ -13,11 +13,12 @@ import {
   Legend,
 } from 'chart.js';
 import { fetchFeedbackByEmployeeId } from '@/lib/services/feedbacks';
-import { fetchMe } from '@/lib/services/employees'; // 👈 追加
+import { useUser } from '@/context/UserContext'; // ← 追加
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const TimeSeriesEvaluation = () => {
+  const user = useUser(); // ← 追加
   const [personData, setPersonData] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('workGuidelines');
   const [selectedSections, setSelectedSections] = useState([]);
@@ -25,8 +26,7 @@ const TimeSeriesEvaluation = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const me = await fetchMe(); // 👈 ログインユーザー取得
-        const employeeId = me?.employeeId;
+        const employeeId = user?.employeeId; // ← useUserから取得
         if (!employeeId) throw new Error("employeeId が取得できません");
 
         const data = await fetchFeedbackByEmployeeId(employeeId);
@@ -36,8 +36,10 @@ const TimeSeriesEvaluation = () => {
       }
     };
 
-    load();
-  }, []);
+    if (user) {
+      load();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (personData && personData.periods?.length > 0) {

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { fetchAssignments } from '@/lib/services/assignments'
-import { fetchMe } from '@/lib/services/employees'
+import { useUser } from '@/context/UserContext'
 import { Button } from "@/components/ui/button"
 import {
   Tabs,
@@ -15,29 +15,35 @@ import {
 export default function AssignmentListPage() {
   const router = useRouter();
   const [assignments, setAssignments] = useState([]);
-  const [user, setUser] = useState(null);
+  const user = useUser();
 
   useEffect(() => {
-    fetchMe().then(userData => {
-      setUser(userData);
-      fetchAssignments().then(setAssignments);
+    fetchAssignments().then((allAssignments) => {
+      if (!user) {
+        setAssignments([]);
+        return;
+      }
+      // 自分が一次・二次・最終考課者のどこかに含まれるものだけ表示
+      const filtered = allAssignments.filter(a =>
+        a.workGuidelinesPrimaryEvaluatorId === user.employeeId ||
+        a.workGuidelinesSecondaryEvaluatorId === user.employeeId ||
+        a.workGuidelinesFinalEvaluatorId === user.employeeId ||
+        a.performanceReviewsPrimaryEvaluatorId === user.employeeId ||
+        a.performanceReviewsSecondaryEvaluatorId === user.employeeId ||
+        a.performanceReviewsFinalEvaluatorId === user.employeeId
+      );
+      setAssignments(filtered);
     });
-  }, []);
+  }, [user]);
 
-  // ログインユーザーが施設長かどうか
   const isFacilityManager = user && user.grade === 'G06';
 
-  // 働き方の指針ページへ遷移（aを引数に渡す）
   const handleWorkGuidelinesClick = (employeeId) => {
-    router.push(
-      `/eval/personal_lists/workGuidelines/${employeeId}` 
-    );
+    router.push(`/eval/personal_lists/workGuidelines/${employeeId}`);
   };
 
-  // 業務考課ページへ遷移
   const handlePerformanceReviewsClick = (employeeId) => {
-    router.push(`/eval/personal_lists/performanceReviews/${employeeId}`
-    );
+    router.push(`/eval/personal_lists/performanceReviews/${employeeId}`);
   };
 
   const handleNavigateToAssignment = () => {
@@ -64,7 +70,7 @@ export default function AssignmentListPage() {
           <TabsTrigger value="job">業務考課</TabsTrigger>
         </TabsList>
         <TabsContent value="guideline">
-          <div className="overflow-y-auto max-h-[500px] border rounded-lg shadow-md">
+          <div className="overflow-y-auto max-h-[450px] border rounded-lg shadow-md">
             <table className="w-full border-collapse">
               <thead className="bg-gray-100 sticky top-0 z-20">
                 <tr>
@@ -74,7 +80,7 @@ export default function AssignmentListPage() {
                   <th className="p-3 border-b text-center">等級</th>
                   <th className="p-3 border-b text-center">1次考課者</th>
                   <th className="p-3 border-b text-center">2次考課者</th>
-                  <th className="p-3 border-b text-center">3次考課者</th>
+                  <th className="p-3 border-b text-center">最終考課者</th>
                   <th className="p-3 border-b text-center">状態</th>
                 </tr>
               </thead>
@@ -105,7 +111,7 @@ export default function AssignmentListPage() {
           </div>
         </TabsContent>
         <TabsContent value="job">
-          <div className="overflow-y-auto max-h-[500px] border rounded-lg shadow-md">
+          <div className="overflow-y-auto max-h-[450px] border rounded-lg shadow-md">
             <table className="w-full border-collapse">
               <thead className="bg-gray-100 sticky top-0 z-20">
                 <tr>
@@ -115,7 +121,7 @@ export default function AssignmentListPage() {
                   <th className="p-3 border-b text-center">等級</th>
                   <th className="p-3 border-b text-center">1次考課者</th>
                   <th className="p-3 border-b text-center">2次考課者</th>
-                  <th className="p-3 border-b text-center">3次考課者</th>
+                  <th className="p-3 border-b text-center">最終考課者</th>
                   <th className="p-3 border-b text-center">状態</th>
                 </tr>
               </thead>

@@ -6,12 +6,11 @@ import UserProvider from '@/components/ui/layout/UserProvider';
 export default async function UserLayout({ children }) {
   const cookieStore = await cookies();
   const token = cookieStore.get('token')?.value;
+  const loginType = cookieStore.get('loginType')?.value; // ←ここで取得
   const user = await fetchMe(token);
 
-  // 本番用リダイレクト
-  // if (!token || !user) {
-  //   redirect('/login');
-  // }
+  // loginTypeをuserにセット
+  if (user) user.loginType = loginType;
 
   return (
     <UserProvider user={user}>

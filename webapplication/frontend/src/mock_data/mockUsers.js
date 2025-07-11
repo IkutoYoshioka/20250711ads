@@ -44,13 +44,13 @@ export const mockUsers =
     ]
   },
   {
-    // 施設長および管理者
+    // 施設長
     "employeeId": "6033",
     "employeeCode": "E98916",
     "lastName": "山田",
     "firstName": "拓真",
     "password": "password",
-    "isAdmin": true,
+    "isAdmin": false,
     "grade": "G06",
     "occupation": "施設長",
     "facility": "八幡デイ・サービスセンター",
@@ -88,15 +88,17 @@ export const mockUsers =
       }
     ]
   },
+  // 役員
   {
     "employeeId": "6076",
     "employeeCode": "E27338",
     "lastName": "遠藤",
     "firstName": "明美",
-    "isAdmin": false,
-    "grade": "G02",
-    "occupation": "高齢看護師",
-    "facility": "青葉ハイツ",
+    "password": "password",
+    "isAdmin": true,
+    "grade": "X01",
+    "occupation": "役員",
+    "facility": "本部",
     "email": "satokenichi@example.org",
     "phone": "070-0211-4617",
     "licensesObtained": "",

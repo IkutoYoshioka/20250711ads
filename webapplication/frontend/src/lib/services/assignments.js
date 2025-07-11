@@ -104,3 +104,16 @@ export async function submitEvaluation(evaluateeId, evaluatorId, type) {
     body: { evaluateeId, evaluatorId, type },
   });
 }
+
+// 施設長割り当て候補取得API（mockAssignmentsから抽出するよう修正）
+export async function fetchAssignmentAuthorities(facility) {
+  if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
+    // facilityに所属 or 兼務している従業員を抽出
+    return mockAssignments.filter(
+      e =>
+        e.facility === facility ||
+        (e.isConcurrent && e.concurrentFacilities && e.concurrentFacilities.includes(facility))
+    );
+  }
+  return api(`/api/assignments/authorities?facility=${encodeURIComponent(facility)}`, { method: 'GET' });
+}

@@ -3,25 +3,39 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { Table, TableHeader, TableRow, TableCell, TableBody } from "@/components/ui/table";
-import { fetchAssignments, saveAssignments } from "@/lib/services/assignments";
+import { fetchAssignments, saveAssignments, fetchAssignmentAuthorities } from "@/lib/services/assignments";
 import { Toaster, toast } from "sonner";
+import { useUser } from "@/context/UserContext";
 
 const AssignmentPage = () => {
+  const user = useUser();
   const [assignments, setAssignments] = useState([]);
   const [evaluators, setEvaluators] = useState([]);
   const [assignmentSelections, setAssignmentSelections] = useState({});
   const [isSaving, setIsSaving] = useState(false);
+
+  // ログインユーザーの施設名を取得
+  const facility = user?.facility || "";
 
   // 割り当て一覧と評価者一覧を取得
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await fetchAssignments();
-        setAssignments(data);
-        setEvaluators(data);
+        // ログインユーザーの施設のみ表示
+        const filtered = data.filter(emp => emp.facility === facility);
+        setAssignments(filtered);
+
+        // 施設ごとの評価者候補を取得
+        if (facility) {
+          const authorities = await fetchAssignmentAuthorities(facility);
+          setEvaluators(authorities);
+        } else {
+          setEvaluators([]);
+        }
 
         const initialSelections = {};
-        data.forEach(emp => {
+        filtered.forEach(emp => {
           initialSelections[emp.employeeId] = {
             primary: emp.primaryEvaluatorId || "",
             secondary: emp.secondaryEvaluatorId || "",
@@ -34,11 +48,14 @@ const AssignmentPage = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [facility]);
+
+  const gradeOrder = ["G04", "G05", "G06"]; // 等級の昇順リスト
 
   // ひとりの被考課者に対して同じ人が2回以上考課できないようにする
   const getAvailableEvaluators = (employeeId, level) => {
     const selected = assignmentSelections[employeeId] || {};
+    const employee = assignments.find(a => a.employeeId === employeeId);
     // すでに他の段階で選ばれている人は除外
     const excludeIds = [
       ...(level !== "primary" && selected.primary && selected.primary !== "none" ? [selected.primary] : []),
@@ -46,7 +63,12 @@ const AssignmentPage = () => {
       ...(level !== "final" && selected.final && selected.final !== "none" ? [selected.final] : []),
       employeeId // 被考課者本人も除外
     ];
-    return evaluators.filter(e => !excludeIds.includes(e.employeeId));
+    // 等級が高い人のみ候補
+    const employeeGradeIndex = gradeOrder.indexOf(employee.grade);
+    return evaluators.filter(e =>
+      !excludeIds.includes(e.employeeId) &&
+      gradeOrder.indexOf(e.grade) > employeeGradeIndex
+    );
   };
 
   const handleAssignmentChange = (employeeId, level, evaluatorId) => {
@@ -146,6 +168,7 @@ const AssignmentPage = () => {
                           {getAvailableEvaluators(employee.employeeId, "primary").map((evaluator) => (
                             <SelectItem key={evaluator.employeeId} value={evaluator.employeeId}>
                               {evaluator.lastName}{evaluator.firstName}・{evaluator.grade}
+                              {evaluator.isConcurrent ? "（兼務）" : ""}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -173,6 +196,7 @@ const AssignmentPage = () => {
                           {getAvailableEvaluators(employee.employeeId, "secondary").map((evaluator) => (
                             <SelectItem key={evaluator.employeeId} value={evaluator.employeeId}>
                               {evaluator.lastName}{evaluator.firstName}・{evaluator.grade}
+                              {evaluator.isConcurrent ? "（兼務）" : ""}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -199,6 +223,7 @@ const AssignmentPage = () => {
                           {getAvailableEvaluators(employee.employeeId, "final").map((evaluator) => (
                             <SelectItem key={evaluator.employeeId} value={evaluator.employeeId}>
                               {evaluator.lastName}{evaluator.firstName}・{evaluator.grade}
+                              {evaluator.isConcurrent ? "（兼務）" : ""}
                             </SelectItem>
                           ))}
                         </SelectContent>

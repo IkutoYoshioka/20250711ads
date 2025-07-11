@@ -6,5 +6,6 @@ import { useUser } from '@/context/UserContext';
 
 export default function EvalHomePage() {
     const user = useUser();
+    console.log("EvalHomePage user:", user);
   return <HomeDashboard user={user} />;
 }

@@ -216,7 +216,7 @@ const InsideFacilityAnalysis = () => {
           </div>
         </div>
       </div>
-      <div className="w-full md:w-1/4 flex flex-col gap-4">
+      <div className="w-full md:w-1/4 flex flex-col gap-4 overflow-y-auto h-[500px]">
         <div className="bg-white p-3 rounded-lg shadow-md">
           <div className="mb-2 font-semibold">表示する施設</div>
           <div className="flex flex-col gap-1 max-h-48 overflow-y-auto">

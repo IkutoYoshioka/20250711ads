@@ -31,6 +31,11 @@ export default function AdminLoginPage() {
         return;
       }
 
+      // 管理者ログインフラグをセット
+      user.loginType = "admin";
+      document.cookie = `token=${user.employeeId}; path=/`;
+      document.cookie = `loginType=admin; path=/`; // ←追加
+
       router.push('/admin');
     } catch (err) {
       setError('無効な社員IDまたはパスワードです');
