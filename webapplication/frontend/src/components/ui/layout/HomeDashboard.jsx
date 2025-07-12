@@ -87,6 +87,11 @@ const HomeDashboard = ({ user }) => {
   const [notifications, setNotifications] = useState([]);
   const [evaluationPeriod, setEvaluationPeriod] = useState(null);
 
+  // admin_loginでログインしたかどうかをCookieから判定
+  const isAdminLogin = typeof document !== 'undefined'
+    ? document.cookie.split('; ').some(c => c === 'loginType=admin')
+    : false;
+
   useEffect(() => {
     fetchNotifications().then(data => {
       let role = user.isAdmin
@@ -107,7 +112,10 @@ const HomeDashboard = ({ user }) => {
     }
   }, [user]);
 
-  if (user.isAdmin) return <AdminDashboard user={user} notifications={notifications} />;
+  // 管理者ダッシュボードはadmin_loginでログインした場合のみ表示
+  if (user.isAdmin && isAdminLogin) {
+    return <AdminDashboard user={user} notifications={notifications} />;
+  }
   if (['G06', 'G05', 'G04', 'X01'].includes(user.grade))
     return <EvalDashboard user={user} notifications={notifications} evaluationPeriod={evaluationPeriod} />;
   return <NonEvalDashboard user={user} notifications={notifications} />;

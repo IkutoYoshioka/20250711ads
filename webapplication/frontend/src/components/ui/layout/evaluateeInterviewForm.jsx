@@ -8,6 +8,7 @@ import { Toaster, toast } from "sonner";
 import { fetchInterviewData, saveInterviewData, fetchInterviewHistory } from "@/lib/services/interviews";
 import { fetchMe, fetchEmployeeById } from "@/lib/services/employees";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+import { useUser } from "@/context/UserContext"; // 追加
 
 const fields = [
   { key: "change", label: "考課期間における自分の変化" },
@@ -19,6 +20,7 @@ const fields = [
 ];
 
 const EvaluateeInterviewForm = () => {
+  const user = useUser(); // useUserでユーザー情報取得
   const [employeeId, setEmployeeId] = useState(null);
   const [interviewData, setInterviewData] = useState(null);
   const [responses, setResponses] = useState({});
@@ -41,11 +43,11 @@ const EvaluateeInterviewForm = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const me = await fetchMe();
-        if (!me?.employeeId) throw new Error("employeeId が取得できません");
-        setEmployeeId(me.employeeId);
+        // fetchMeの代わりにuseUserからemployeeId取得
+        if (!user?.employeeId) throw new Error("employeeId が取得できません");
+        setEmployeeId(user.employeeId);
 
-        const list = await fetchInterviewHistory(me.employeeId);
+        const list = await fetchInterviewHistory(user.employeeId);
         // 新しい順に並べる
         list.sort((a, b) => (a.period < b.period ? 1 : -1));
         setHistory(list);

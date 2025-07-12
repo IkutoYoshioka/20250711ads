@@ -30,6 +30,217 @@ export const feedbacks = [
                 { questionId: "1001-2022年度後期-wg-2-q2", question: "他者の意見を尊重したか", maxScore: 10, obtainedScore: 8 },
               ],
             },
+            {
+                sectionId: "wg-3",
+                section: "責任感",
+                score: 92,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-3-q1",
+                    question: "任された業務を最後までやり遂げたか",
+                    maxScore: 10,
+                    obtainedScore: 10
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-3-q2",
+                    question: "ミスに対して責任ある行動を取ったか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-4",
+                section: "課題解決力",
+                score: 84,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-4-q1",
+                    question: "問題に対して主体的に対応したか",
+                    maxScore: 10,
+                    obtainedScore: 8
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-4-q2",
+                    question: "代替案や改善策を提示したか",
+                    maxScore: 10,
+                    obtainedScore: 8
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-5",
+                section: "成長意欲",
+                score: 88,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-5-q1",
+                    question: "スキル向上のために自己研鑽を行ったか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-5-q2",
+                    question: "フィードバックを業務に活かしたか",
+                    maxScore: 10,
+                    obtainedScore: 8
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-6",
+                section: "柔軟性",
+                score: 86,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-6-q1",
+                    question: "変化に応じた対応ができたか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-6-q2",
+                    question: "異なる立場や意見を受け入れたか",
+                    maxScore: 10,
+                    obtainedScore: 8
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-7",
+                section: "タイムマネジメント",
+                score: 80,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-7-q1",
+                    question: "業務の優先順位を適切に判断したか",
+                    maxScore: 10,
+                    obtainedScore: 7
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-7-q2",
+                    question: "期限内に業務を完了したか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-8",
+                section: "コミュニケーション力",
+                score: 94,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-8-q1",
+                    question: "報連相を適切に行ったか",
+                    maxScore: 10,
+                    obtainedScore: 10
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-8-q2",
+                    question: "相手に配慮した伝え方ができたか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-9",
+                section: "業務理解力",
+                score: 90,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-9-q1",
+                    question: "業務の目的を理解して行動したか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-9-q2",
+                    question: "業務手順やルールに従って遂行したか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-10",
+                section: "顧客志向",
+                score: 86,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-10-q1",
+                    question: "利用者や顧客の立場に立った行動を取ったか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-10-q2",
+                    question: "顧客満足の向上を意識した業務を行ったか",
+                    maxScore: 10,
+                    obtainedScore: 8
+                  }
+                ]
+              },
+              {
+              sectionId: "wg-11",
+              section: "倫理観・規範意識",
+              score: 94,
+              questions: [
+                {
+                  questionId: "1001-2022年度後期-wg-11-q1",
+                  question: "会社のルールや社会的規範を遵守しているか",
+                  maxScore: 10,
+                  obtainedScore: 9
+                },
+                {
+                  questionId: "1001-2022年度後期-wg-11-q2",
+                  question: "公私の区別を明確にし、公平に行動しているか",
+                  maxScore: 10,
+                  obtainedScore: 10
+                }
+              ]
+            },
+            {
+              sectionId: "wg-12",
+              section: "リーダーシップ",
+              score: 88,
+              questions: [
+                {
+                  questionId: "1001-2022年度後期-wg-12-q1",
+                  question: "チームや周囲を巻き込みながら目標達成を促したか",
+                  maxScore: 10,
+                  obtainedScore: 9
+                },
+                {
+                  questionId: "1001-2022年度後期-wg-12-q2",
+                  question: "困難な状況でも冷静に判断し、行動を導いたか",
+                  maxScore: 10,
+                  obtainedScore: 8
+                }
+              ]
+            },
+            {
+              sectionId: "wg-13",
+              section: "創造力・提案力",
+              score: 86,
+              questions: [
+                {
+                  questionId: "1001-2022年度後期-wg-13-q1",
+                  question: "既存の枠にとらわれず新たな視点で考えたか",
+                  maxScore: 10,
+                  obtainedScore: 8
+                },
+                {
+                  questionId: "1001-2022年度後期-wg-13-q2",
+                  question: "具体的な改善提案やアイデアを積極的に発信したか",
+                  maxScore: 10,
+                  obtainedScore: 9
+                }
+              ]
+            }
+
+
           ],
         },
         performanceReviews: {
@@ -165,21 +376,232 @@ export const feedbacks = [
             {
               sectionId: "wg-1",
               section: "主体性",
-              score: 90,
+              score: 96,
               questions: [
-                { questionId: "1001-2024年度前期-wg-1-q1", question: "自ら考えて行動したか", maxScore: 10, obtainedScore: 9 },
-                { questionId: "1001-2024年度前期-wg-1-q2", question: "新しい提案をしたか", maxScore: 10, obtainedScore: 9 },
+                { questionId: "1001-2022年度後期-wg-1-q1", question: "自ら考えて行動したか", maxScore: 10, obtainedScore: 8 },
+                { questionId: "1001-2022年度後期-wg-1-q2", question: "新しい提案をしたか", maxScore: 10, obtainedScore: 9 },
               ],
             },
             {
               sectionId: "wg-2",
               section: "協調性",
-              score: 80,
+              score: 90,
               questions: [
-                { questionId: "1001-2024年度前期-wg-2-q1", question: "チームで協力したか", maxScore: 10, obtainedScore: 8 },
-                { questionId: "1001-2024年度前期-wg-2-q2", question: "他者の意見を尊重したか", maxScore: 10, obtainedScore: 8 },
+                { questionId: "1001-2022年度後期-wg-2-q1", question: "チームで協力したか", maxScore: 10, obtainedScore: 7 },
+                { questionId: "1001-2022年度後期-wg-2-q2", question: "他者の意見を尊重したか", maxScore: 10, obtainedScore: 8 },
               ],
             },
+            {
+                sectionId: "wg-3",
+                section: "責任感",
+                score: 92,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-3-q1",
+                    question: "任された業務を最後までやり遂げたか",
+                    maxScore: 10,
+                    obtainedScore: 10
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-3-q2",
+                    question: "ミスに対して責任ある行動を取ったか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-4",
+                section: "課題解決力",
+                score: 84,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-4-q1",
+                    question: "問題に対して主体的に対応したか",
+                    maxScore: 10,
+                    obtainedScore: 8
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-4-q2",
+                    question: "代替案や改善策を提示したか",
+                    maxScore: 10,
+                    obtainedScore: 8
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-5",
+                section: "成長意欲",
+                score: 88,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-5-q1",
+                    question: "スキル向上のために自己研鑽を行ったか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-5-q2",
+                    question: "フィードバックを業務に活かしたか",
+                    maxScore: 10,
+                    obtainedScore: 8
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-6",
+                section: "柔軟性",
+                score: 86,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-6-q1",
+                    question: "変化に応じた対応ができたか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-6-q2",
+                    question: "異なる立場や意見を受け入れたか",
+                    maxScore: 10,
+                    obtainedScore: 8
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-7",
+                section: "タイムマネジメント",
+                score: 80,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-7-q1",
+                    question: "業務の優先順位を適切に判断したか",
+                    maxScore: 10,
+                    obtainedScore: 7
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-7-q2",
+                    question: "期限内に業務を完了したか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-8",
+                section: "コミュニケーション力",
+                score: 94,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-8-q1",
+                    question: "報連相を適切に行ったか",
+                    maxScore: 10,
+                    obtainedScore: 10
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-8-q2",
+                    question: "相手に配慮した伝え方ができたか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-9",
+                section: "業務理解力",
+                score: 90,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-9-q1",
+                    question: "業務の目的を理解して行動したか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-9-q2",
+                    question: "業務手順やルールに従って遂行したか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  }
+                ]
+              },
+              {
+                sectionId: "wg-10",
+                section: "顧客志向",
+                score: 86,
+                questions: [
+                  {
+                    questionId: "1001-2022年度後期-wg-10-q1",
+                    question: "利用者や顧客の立場に立った行動を取ったか",
+                    maxScore: 10,
+                    obtainedScore: 9
+                  },
+                  {
+                    questionId: "1001-2022年度後期-wg-10-q2",
+                    question: "顧客満足の向上を意識した業務を行ったか",
+                    maxScore: 10,
+                    obtainedScore: 8
+                  }
+                ]
+              },
+              {
+              sectionId: "wg-11",
+              section: "倫理観・規範意識",
+              score: 94,
+              questions: [
+                {
+                  questionId: "1001-2022年度後期-wg-11-q1",
+                  question: "会社のルールや社会的規範を遵守しているか",
+                  maxScore: 10,
+                  obtainedScore: 9
+                },
+                {
+                  questionId: "1001-2022年度後期-wg-11-q2",
+                  question: "公私の区別を明確にし、公平に行動しているか",
+                  maxScore: 10,
+                  obtainedScore: 10
+                }
+              ]
+            },
+            {
+              sectionId: "wg-12",
+              section: "リーダーシップ",
+              score: 88,
+              questions: [
+                {
+                  questionId: "1001-2022年度後期-wg-12-q1",
+                  question: "チームや周囲を巻き込みながら目標達成を促したか",
+                  maxScore: 10,
+                  obtainedScore: 9
+                },
+                {
+                  questionId: "1001-2022年度後期-wg-12-q2",
+                  question: "困難な状況でも冷静に判断し、行動を導いたか",
+                  maxScore: 10,
+                  obtainedScore: 8
+                }
+              ]
+            },
+            {
+              sectionId: "wg-13",
+              section: "創造力・提案力",
+              score: 86,
+              questions: [
+                {
+                  questionId: "1001-2022年度後期-wg-13-q1",
+                  question: "既存の枠にとらわれず新たな視点で考えたか",
+                  maxScore: 10,
+                  obtainedScore: 8
+                },
+                {
+                  questionId: "1001-2022年度後期-wg-13-q2",
+                  question: "具体的な改善提案やアイデアを積極的に発信したか",
+                  maxScore: 10,
+                  obtainedScore: 9
+                }
+              ]
+            }
+
+
           ],
         },
         performanceReviews: {

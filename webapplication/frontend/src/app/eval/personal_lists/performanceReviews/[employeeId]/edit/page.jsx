@@ -5,7 +5,7 @@ import ProgressBar from "./progressbar";
 import { useParams, useRouter } from "next/navigation";
 import { Toaster, toast } from "sonner";
 import { fetchSavedEvaluation, saveEvaluation } from "@/lib/services/assignments";
-import { fetchMe } from "@/lib/services/employees";
+import { useUser } from "@/context/UserContext"; // 追加
 
 export default function EditPage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -19,10 +19,12 @@ export default function EditPage() {
   const params = useParams();
   const evaluateeId = params.employeeId;
 
+  const user = useUser(); // useUserでユーザー情報取得
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const user = await fetchMe();
+        if (!user || !user.employeeId) return;
         setEvaluatorId(user.employeeId);
 
         const detail = await fetchSavedEvaluation(evaluateeId, user.employeeId);
@@ -30,7 +32,7 @@ export default function EditPage() {
 
         setIndividual(detail);
 
-        // 「働き方の指針」だけを抽出
+        // 「業務考課」だけを抽出
         const filteredSections = (detail.sections || []).filter(
           (section) => section.type === "業務考課"
         );
@@ -55,8 +57,8 @@ export default function EditPage() {
       }
     };
     fetchData();
-  }, [evaluateeId]);
-  
+  }, [evaluateeId, user]);
+
   console.log("復元:", formData);
 
   const handleAnswerChange = (questionId, value) => {
@@ -129,8 +131,8 @@ export default function EditPage() {
   return (
     <>
       <Toaster position="top-right" richColors />
-      <div className="flex">
-        <div className="flex h-screen">
+      <div className="flex w-full h-screen">
+        <div className="flex h-screen w-full">
           <div className="w-60 h-full sticky top-0">
             <ProgressBar
               currentStep={currentStep}
@@ -144,7 +146,7 @@ export default function EditPage() {
               })}
             />
           </div>
-          <div className="bg-white overflow-y-auto" style={{ width: 600, minWidth: 300, maxWidth: 600 }}>
+          <div className="bg-white overflow-y-auto flex-1">
             <div ref={contentRef} className="flex-1 overflow-y-auto p-8">
               <h2 className="text-2xl font-semibold mb-6 text-gray-800">{sectionNames[currentStep]}</h2>
               <form>

@@ -34,6 +34,9 @@ export default function LoginPage() {
       // 認証APIを呼び出し（cookieで管理）
       const user = await login(employeeCode, password);
 
+      // 管理者ログインCookieを消す（通常ログイン時）
+      document.cookie = "loginType=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
       // ★ここでemployeeIdをtokenとしてクッキーに保存
       document.cookie = `token=${user.employeeId}; path=/`;
 

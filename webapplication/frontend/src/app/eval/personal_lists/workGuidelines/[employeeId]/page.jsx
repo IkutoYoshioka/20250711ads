@@ -4,12 +4,14 @@ import { notFound, useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import CommonContent from './content';
 import { fetchSavedEvaluation, submitEvaluation } from '@/lib/services/assignments';
-import { fetchMe } from '@/lib/services/employees';
 import { toast, Toaster } from 'sonner';
+import { useUser } from '@/context/UserContext'; // 追加
 
 export default function PersonEvaluation() {
   const params = useParams();
   const employeeId = Array.isArray(params.employeeId) ? params.employeeId[0] : params.employeeId;
+
+  const user = useUser(); // useUserでユーザー情報取得
 
   const [individual, setIndividual] = useState({});
   const [sections, setSections] = useState([]);
@@ -20,16 +22,14 @@ export default function PersonEvaluation() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [evaluatorId, setEvaluatorId] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        // evaluatorId取得
-        const user = await fetchMe();
-        setEvaluatorId(user.employeeId);
+        // evaluatorId取得（useUserから）
+        if (!user || !user.employeeId) return;
 
         // 評価情報を取得
         const detail = await fetchSavedEvaluation(employeeId, null);
@@ -56,7 +56,7 @@ export default function PersonEvaluation() {
       }
     }
     fetchData();
-  }, [employeeId]);
+  }, [employeeId, user]);
 
   // 提出ボタン押下時（確認ダイアログ表示）
   const handleSubmit = () => {
@@ -68,7 +68,7 @@ export default function PersonEvaluation() {
     setIsSubmitting(true);
     setShowConfirm(false);
     try {
-      await submitEvaluation(employeeId, evaluatorId, "workGuidelines");
+      await submitEvaluation(employeeId, user.employeeId, "workGuidelines");
       toast.success("提出が完了しました。");
       setTimeout(() => {
         router.push("/eval/personal_lists");

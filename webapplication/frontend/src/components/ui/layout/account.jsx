@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Toaster, toast } from "sonner";
-import { fetchMe, updateEmployee } from "@/lib/services/employees"; // 👈 fetchMe, updateEmployee を使用
+import { updateEmployee } from "@/lib/services/employees"; // fetchMeは削除
+import { useUser } from "@/context/UserContext"; // 追加
 
 const AccountPage = () => {
+  const user = useUser(); // useUserでユーザー情報取得
   const [userInfo, setUserInfo] = useState(null);
   const [futureLicenses, setFutureLicenses] = useState([]);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -20,23 +22,11 @@ const AccountPage = () => {
   const [licensesObtainedInput, setLicensesObtainedInput] = useState("");
 
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const user = await fetchMe();
-        if (!user) {
-          toast.error("ログイン情報が取得できませんでした。");
-          return;
-        }
-        setUserInfo(user);
-        setFutureLicenses(Array.isArray(user.licensesFuture) ? user.licensesFuture : []);
-        setLicensesObtainedInput(user.licensesObtained || "");
-      } catch (error) {
-        console.error("ユーザー情報の取得失敗:", error);
-        toast.error("データの取得に失敗しました。");
-      }
-    };
-    loadUser();
-  }, []);
+    if (!user) return;
+    setUserInfo(user);
+    setFutureLicenses(Array.isArray(user.licensesFuture) ? user.licensesFuture : []);
+    setLicensesObtainedInput(user.licensesObtained || "");
+  }, [user]);
 
   console.log("アカウント情報", userInfo);
 

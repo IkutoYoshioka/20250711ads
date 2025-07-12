@@ -4,13 +4,15 @@ import { notFound, useParams } from 'next/navigation';
 import Link from 'next/link';
 import CommonContent from './content';
 import { fetchSavedEvaluation, submitEvaluation } from '@/lib/services/assignments';
-import { fetchMe } from '@/lib/services/employees';
 import { toast, Toaster } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/context/UserContext'; // 追加
 
 export default function PersonEvaluation() {
   const params = useParams();
   const employeeId = Array.isArray(params.employeeId) ? params.employeeId[0] : params.employeeId;
+
+  const user = useUser(); // useUserでユーザー情報取得
 
   const [individual, setIndividual] = useState({});
   const [sections, setSections] = useState([]);
@@ -21,7 +23,6 @@ export default function PersonEvaluation() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [evaluatorId, setEvaluatorId] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const router = useRouter();
 
@@ -29,8 +30,8 @@ export default function PersonEvaluation() {
     async function fetchData() {
       try {
         // evaluatorId取得
-        const user = await fetchMe();
-        setEvaluatorId(user.employeeId);
+        if (!user || !user.employeeId) return;
+        const evaluatorId = user.employeeId;
 
         // 評価情報を取得
         const detail = await fetchSavedEvaluation(employeeId, null);
@@ -57,7 +58,7 @@ export default function PersonEvaluation() {
       }
     }
     fetchData();
-  }, [employeeId]);
+  }, [employeeId, user]);
 
   // 提出ボタン押下時（確認ダイアログ表示）
   const handleSubmit = () => {
@@ -69,11 +70,11 @@ export default function PersonEvaluation() {
     setIsSubmitting(true);
     setShowConfirm(false);
     try {
-      await submitEvaluation(employeeId, evaluatorId, "performanceReviews");
+      await submitEvaluation(employeeId, user.employeeId, "performanceReviews");
       toast.success("提出が完了しました。");
       setTimeout(() => {
-        router.push("/eval/personal_lists"); // 数秒後に前のページへ遷移
-      }, 4000); // 2秒後に遷移（必要に応じて時間を調整）
+        router.push("/eval/personal_lists");
+      }, 4000);
     } catch (error) {
       toast.error("提出に失敗しました。");
     } finally {

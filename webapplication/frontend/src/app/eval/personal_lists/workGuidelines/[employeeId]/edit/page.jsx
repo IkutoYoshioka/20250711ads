@@ -5,7 +5,7 @@ import ProgressBar from "./progressbar";
 import { useParams, useRouter } from "next/navigation";
 import { Toaster, toast } from "sonner";
 import { fetchSavedEvaluation, saveEvaluation } from "@/lib/services/assignments";
-import { fetchMe } from "@/lib/services/employees";
+import { useUser } from "@/context/UserContext"; // 追加
 
 export default function EditPage() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -19,10 +19,12 @@ export default function EditPage() {
   const params = useParams();
   const evaluateeId = params.employeeId;
 
+  const user = useUser(); // useUserでユーザー情報取得
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const user = await fetchMe();
+        if (!user || !user.employeeId) return; // user情報が取得できていなければ何もしない
         setEvaluatorId(user.employeeId);
 
         const detail = await fetchSavedEvaluation(evaluateeId, user.employeeId);
@@ -55,7 +57,7 @@ export default function EditPage() {
       }
     };
     fetchData();
-  }, [evaluateeId]);
+  }, [evaluateeId, user]);
 
   const handleAnswerChange = (questionId, value) => {
     let score;
@@ -111,7 +113,6 @@ export default function EditPage() {
     try {
       await saveEvaluation(evaluateeId, evaluatorId, evaluationDetails);
       toast.success("データが保存されました。");
-      // クエリパラメータ不要、シンプルに遷移
       router.push(`/eval/personal_lists/workGuidelines/${evaluateeId}`);
     } catch (error) {
       console.error("保存失敗:", error);
