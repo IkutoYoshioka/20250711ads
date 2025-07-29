@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
 import { FiEdit, FiSearch, FiSave } from "react-icons/fi";
-import { fetchEmployees, updateEmployee } from "@/lib/services/employees";
+import { fetchEmployees, updateEmployee, createEmployee } from "@/lib/services/employees"; // createEmployeeを追加
 import { toast, Toaster } from "sonner";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
@@ -19,6 +19,15 @@ const EditDB = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [newEmployee, setNewEmployee] = useState({
+    lastName: "",
+    firstName: "",
+    occupation: "",
+    grade: "",
+    facility: "",
+    employeeCode: "",
+  });
 
   useEffect(() => {
     const getEmployees = async () => {
@@ -75,10 +84,35 @@ const EditDB = () => {
     }
   };
 
+  // 新規追加処理
+  const handleAddEmployee = async () => {
+    try {
+      const added = await createEmployee(newEmployee);
+      setEmployees((prev) => [...prev, added]);
+      setAddOpen(false);
+      toast.success("従業員を追加しました。");
+      setNewEmployee({
+        lastName: "",
+        firstName: "",
+        occupation: "",
+        grade: "",
+        facility: "",
+        employeeCode: "",
+      });
+    } catch (error) {
+      toast.error("従業員の追加に失敗しました。");
+    }
+  };
+
   return (
     <div className="p-3">
       <Toaster position="top-right" richColors />
-      <h1 className="text-2xl font-bold mb-2 text-gray-800">従業員情報管理</h1>
+      <div className="flex justify-between items-center mb-2">
+        <h1 className="text-2xl font-bold text-gray-800">従業員情報管理</h1>
+        <Button className=" text-white" onClick={() => setAddOpen(true)}>
+          ＋ 従業員を追加する
+        </Button>
+      </div>
 
       {/* フィルタ & 検索 */}
       <div className="flex gap-4 mb-3">
@@ -147,6 +181,53 @@ const EditDB = () => {
           </PaginationContent>
         </Pagination>
       </div>
+
+      {/* 新規追加ダイアログ */}
+      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+        <DialogContent>
+          <DialogTitle>新規従業員追加</DialogTitle>
+          <div className="space-y-2">
+            <Input
+              placeholder="氏名（姓）"
+              value={newEmployee.lastName}
+              onChange={e => setNewEmployee({ ...newEmployee, lastName: e.target.value })}
+            />
+            <Input
+              placeholder="氏名（名）"
+              value={newEmployee.firstName}
+              onChange={e => setNewEmployee({ ...newEmployee, firstName: e.target.value })}
+            />
+            <Input
+              placeholder="職種"
+              value={newEmployee.occupation}
+              onChange={e => setNewEmployee({ ...newEmployee, occupation: e.target.value })}
+            />
+            <Input
+              placeholder="等級 (Gxx)"
+              value={newEmployee.grade}
+              onChange={e => setNewEmployee({ ...newEmployee, grade: e.target.value })}
+            />
+            <Input
+              placeholder="施設"
+              value={newEmployee.facility}
+              onChange={e => setNewEmployee({ ...newEmployee, facility: e.target.value })}
+            />
+            <Input
+              placeholder="社員コード"
+              value={newEmployee.employeeCode}
+              onChange={e => setNewEmployee({ ...newEmployee, employeeCode: e.target.value })}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddOpen(false)}>
+              キャンセル
+            </Button>
+            <Button className="bg-blue-600 text-white" onClick={handleAddEmployee}>
+              追加
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* 編集用 Sheet */}
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>

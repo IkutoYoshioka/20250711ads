@@ -74,3 +74,19 @@ export async function requestPasswordReset(employeeCode, facility) {
     body: { employeeCode, facility }
   });
 }
+
+// 新規従業員追加
+export async function createEmployee(data) {
+  // モック利用時
+  if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
+    const newId = String(Date.now());
+    const newUser = { ...data, employeeId: newId };
+    mockUsers.push(newUser);
+    return newUser;
+  }
+  // 本番API
+  return api('/api/employees', {
+    method: 'POST',
+    body: data
+  });
+}

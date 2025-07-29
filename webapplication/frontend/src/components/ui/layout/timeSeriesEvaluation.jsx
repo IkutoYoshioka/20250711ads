@@ -85,6 +85,11 @@ const TimeSeriesEvaluation = () => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false, // ← これを追加
+      },
+    },
     scales: {
       x: {
         type: 'category',
@@ -134,9 +139,9 @@ const TimeSeriesEvaluation = () => {
         {activeTab === "overall" && (
           <div className="bg-white p-6 rounded-xl shadow-md flex flex-col" style={{ minHeight: 420 }}>
             <h2 className="text-xl font-bold mb-2 text-blue-900">{personData.lastName}{personData.firstName} の時系列推移</h2>
-            <h3 className="text-md font-semibold mb-4 text-blue-700">
+            {/* <h3 className="text-md font-semibold mb-4 text-blue-700">
               ({selectedCategory === 'workGuidelines' ? '働き方の指針' : '業務考課'})
-            </h3>
+            </h3> */}
             {/* カテゴリー選択 */}
             <div className="flex items-center space-x-4 mb-0">
               <label className="text-lg font-bold">評価種類:</label>
@@ -149,14 +154,13 @@ const TimeSeriesEvaluation = () => {
                 <option value="performanceReviews">業務考課</option>
               </select>
             </div>
-            <div style={{ height: 250 }}>
+            <div style={{ height: 300 }}>
               <Line data={overallChartData} options={options} />
             </div>
           </div>
         )}
         {activeTab === "section" && (
-          <div className="bg-white p-6 rounded-xl shadow-md flex flex-col overflow-y-auto h-[400px]" >
-            <h2 className="text-xl font-bold mb-2 text-blue-900">セクション別推移</h2>
+          <div className="bg-white p-3 rounded-xl shadow-md flex flex-col overflow-y-auto h-[400px]" >
             <div className="flex flex-wrap gap-3 mb-4 py-2">
               {sectionNames.map((section, index) => (
                 <label key={index} className="flex items-center px-3 py-1 bg-blue-50 rounded-lg border border-blue-200 cursor-pointer transition hover:bg-blue-100">
@@ -182,7 +186,7 @@ const TimeSeriesEvaluation = () => {
                 <option value="performanceReviews">業務考課</option>
               </select>
             </div>
-            <div style={{ height: 320 }}>
+            <div style={{ height: 300 }}>
               <Line data={sectionChartData} options={options} />
             </div>
           </div>

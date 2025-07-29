@@ -7,12 +7,29 @@ import { fetchAssignments, saveAssignments, fetchAssignmentAuthorities } from "@
 import { Toaster, toast } from "sonner";
 import { useUser } from "@/context/UserContext";
 
+// 簡易モーダル
+const Modal = ({ open, onClose, children }) => {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+      <div className="bg-white rounded-lg shadow-lg p-6 min-w-[320px] max-w-lg">
+        {children}
+        <div className="flex justify-end mt-6">
+          <Button onClick={onClose}>閉じる</Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AssignmentPage = () => {
   const user = useUser();
   const [assignments, setAssignments] = useState([]);
   const [evaluators, setEvaluators] = useState([]);
   const [assignmentSelections, setAssignmentSelections] = useState({});
   const [isSaving, setIsSaving] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [unassignedEvaluators, setUnassignedEvaluators] = useState([]);
 
   // ログインユーザーの施設名を取得
   const facility = user?.facility || "";
@@ -92,6 +109,22 @@ const AssignmentPage = () => {
     });
   };
 
+  // 割り当てられていない考課者（考課者が誰も非考課者を担当していない）を検出
+  const findUnassignedEvaluators = () => {
+    // 各考課者(employeeId)が誰かを担当しているか
+    const assigned = {};
+    Object.entries(assignmentSelections).forEach(([targetId, sel]) => {
+      ["primary", "secondary", "final"].forEach(level => {
+        const evalId = sel[level];
+        if (evalId && evalId !== "none") {
+          assigned[evalId] = true;
+        }
+      });
+    });
+    // evaluatorsのうち、誰も担当していない人を抽出
+    return evaluators.filter(e => !assigned[e.employeeId]);
+  };
+
   const handleSaveAssignments = async () => {
     setIsSaving(true);
     try {
@@ -106,6 +139,15 @@ const AssignmentPage = () => {
           return;
         }
       }
+      // 割り当てられていない考課者を検出
+      const unassigned = findUnassignedEvaluators();
+      if (unassigned.length > 0) {
+        setUnassignedEvaluators(unassigned);
+        setModalOpen(true);
+        setIsSaving(false);
+        return;
+      }
+      // 保存処理
       const saveData = Object.entries(assignmentSelections).map(([employeeId, sel]) => ({
         employeeId,
         primaryEvaluatorId: sel.primary,
@@ -124,11 +166,37 @@ const AssignmentPage = () => {
   return (
     <>
       <Toaster position="top-right" richColors/>
-      <div className="mx-auto p-3 space-y-3">
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <div>
+          <h3 className="text-lg font-bold mb-2">割り当てられていない考課者がいます</h3>
+          <p className="mb-2 text-sm text-gray-700">
+            下記の考課者は誰も担当していません。<br />
+            考課者は非考課者を1人以上担当する必要があります。
+          </p>
+          <ul className="mb-2 list-disc list-inside text-sm">
+            {unassignedEvaluators.map(e => (
+              <li key={e.employeeId}>
+                {e.lastName}{e.firstName}（{e.grade}）
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-gray-500">割り当てを見直してください。</p>
+        </div>
+      </Modal>
+      <div className="mx-auto p-3 space-y-3 max-w-5xl">
+        {/* タイトル・説明 */}
+        <div className="mb-2">
+          <h2 className="text-2xl font-bold mb-1">人事考課 割り当て設定</h2>
+          <p className="text-gray-600 text-sm">
+            各被考課者ごとに一次・二次・最終考課者を選択してください。同じ評価者を複数段階で割り当てることはできません。
+          </p>
+        </div>
         {/* 従業員リスト */}
-        <div className="bg-white p-2 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold mb-4">被考課者リスト</h2>
-          <div className="overflow-y-auto max-h-[450px]">
+        <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg font-semibold">被考課者リスト（{assignments.length}名）</h3>
+          </div>
+          <div className="overflow-x-auto overflow-y-auto max-h-[370px] pb-6">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -139,13 +207,19 @@ const AssignmentPage = () => {
                   <TableCell>二次考課者</TableCell>
                   <TableCell>最終考課者</TableCell>
                 </TableRow>
-              </TableHeader> 
+              </TableHeader>
               <TableBody>
                 {assignments.map((employee) => (
-                  <TableRow key={employee.employeeId}>
-                    <TableCell>{employee.lastName}{employee.firstName}</TableCell>
+                  <TableRow key={employee.employeeId} className="align-top">
+                    <TableCell>
+                      <div>
+                        <span className="font-bold">{employee.lastName}{employee.firstName}</span>
+                        <div className="text-xs text-gray-400">{employee.employeeId}</div>
+                      </div>
+                    </TableCell>
                     <TableCell>{employee.grade}</TableCell>
                     <TableCell>{employee.facility}</TableCell>
+                    {/* 一次考課者 */}
                     <TableCell>
                       <Select
                         value={assignmentSelections[employee.employeeId]?.primary || ""}
@@ -153,18 +227,18 @@ const AssignmentPage = () => {
                           handleAssignmentChange(employee.employeeId, "primary", value)
                         }
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-40">
                           {assignmentSelections[employee.employeeId]?.primary === "none"
-                            ? <span className="text-red-500">この考課段階は実施しない</span>
+                            ? <span className="text-red-500">実施しない</span>
                             : evaluators.find(
                                 (e) => e.employeeId === assignmentSelections[employee.employeeId]?.primary
                               )?.lastName +
                               (evaluators.find(
                                 (e) => e.employeeId === assignmentSelections[employee.employeeId]?.primary
-                              )?.firstName || "") || "選択してください"}
+                              )?.firstName || "") || "選択"}
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="none">この考課段階は実施しない</SelectItem>
+                          <SelectItem value="none">実施しない</SelectItem>
                           {getAvailableEvaluators(employee.employeeId, "primary").map((evaluator) => (
                             <SelectItem key={evaluator.employeeId} value={evaluator.employeeId}>
                               {evaluator.lastName}{evaluator.firstName}・{evaluator.grade}
@@ -174,6 +248,7 @@ const AssignmentPage = () => {
                         </SelectContent>
                       </Select>
                     </TableCell>
+                    {/* 二次考課者 */}
                     <TableCell>
                       <Select
                         value={assignmentSelections[employee.employeeId]?.secondary || ""}
@@ -181,18 +256,18 @@ const AssignmentPage = () => {
                           handleAssignmentChange(employee.employeeId, "secondary", value)
                         }
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-40">
                           {assignmentSelections[employee.employeeId]?.secondary === "none"
-                            ? <span className="text-red-500">この考課段階は実施しない</span>
+                            ? <span className="text-red-500">実施しない</span>
                             : evaluators.find(
                                 (e) => e.employeeId === assignmentSelections[employee.employeeId]?.secondary
                               )?.lastName +
                               (evaluators.find(
                                 (e) => e.employeeId === assignmentSelections[employee.employeeId]?.secondary
-                              )?.firstName || "") || "選択してください"}
+                              )?.firstName || "") || "選択"}
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="none">この考課段階は実施しない</SelectItem>
+                          <SelectItem value="none">実施しない</SelectItem>
                           {getAvailableEvaluators(employee.employeeId, "secondary").map((evaluator) => (
                             <SelectItem key={evaluator.employeeId} value={evaluator.employeeId}>
                               {evaluator.lastName}{evaluator.firstName}・{evaluator.grade}
@@ -202,6 +277,7 @@ const AssignmentPage = () => {
                         </SelectContent>
                       </Select>
                     </TableCell>
+                    {/* 最終考課者 */}
                     <TableCell>
                       <Select
                         value={assignmentSelections[employee.employeeId]?.final || ""}
@@ -209,15 +285,15 @@ const AssignmentPage = () => {
                           handleAssignmentChange(employee.employeeId, "final", value)
                         }
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-40">
                           {assignmentSelections[employee.employeeId]?.final
                             ? evaluators.find(
                                 (e) => e.employeeId === assignmentSelections[employee.employeeId]?.final
                               )?.lastName +
                               (evaluators.find(
                                 (e) => e.employeeId === assignmentSelections[employee.employeeId]?.final
-                              )?.firstName || "") || "選択してください"
-                            : "選択してください"}
+                              )?.firstName || "") || "選択"
+                            : "選択"}
                         </SelectTrigger>
                         <SelectContent>
                           {getAvailableEvaluators(employee.employeeId, "final").map((evaluator) => (
@@ -238,7 +314,7 @@ const AssignmentPage = () => {
 
         {/* 保存ボタン */}
         <div className="flex justify-end">
-          <Button className="bg-blue-600 text-white" onClick={handleSaveAssignments} disabled={isSaving}>
+          <Button className="bg-blue-600 text-white px-8 py-2" onClick={handleSaveAssignments} disabled={isSaving}>
             {isSaving ? "保存中..." : "割り当てを保存"}
           </Button>
         </div>

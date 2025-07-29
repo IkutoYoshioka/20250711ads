@@ -11,16 +11,31 @@ const Header = ({ toggleSidebar, isSidebarOpen, user }) => {
     const pathname = usePathname();
     const pathSegments = pathname.split('/').filter(Boolean);
 
+    // 英語URLセグメント → 日本語タイトルの対応表
+    const segmentJaTitles = {
+        workGuidelines: '働き方の指針',
+        performanceReviews: '業務考課',
+        edit: '編集',
+        edit_employees: '従業員管理',
+        edit_questions: '質問管理',
+        assign_questions: '今期質問割り当て',
+        assignment: '今期従業員割り当て',
+        // 必要に応じて追加
+    };
+
     // menuConfigからタイトル対応表を動的生成
     const breadcrumbTitles = {};
     Object.values(menuConfig).flat().forEach(item => {
-        // パスの最後のセグメントをタイトルのキーに
         const segments = item.path.split('/').filter(Boolean);
         const key = segments[segments.length - 1];
         breadcrumbTitles[key] = item.label;
     });
 
-    // パンくずリストを生成 (eval以下の階層のみ)
+    // employeeIdかどうか判定する関数（例：数字のみ or UUID形式など）
+    const isEmployeeId = (segment) => /^\d+$/.test(segment); // 数字のみの場合
+    // UUIDの場合は /^[0-9a-fA-F-]{36}$/.test(segment) など
+
+    // パンくずリストを生成
     const breadcrumbs = [
         <React.Fragment key="home">
             <BreadcrumbList>
@@ -36,7 +51,10 @@ const Header = ({ toggleSidebar, isSidebarOpen, user }) => {
         </React.Fragment>,
         ...pathSegments.slice(1).map((segment, index) => {
             const href = "/" + pathSegments.slice(0, index + 2).join("/");
-            const title = breadcrumbTitles[segment] || decodeURIComponent(segment);
+            let title =
+                breadcrumbTitles[segment] ||
+                segmentJaTitles[segment] ||
+                (isEmployeeId(segment) ? "ユーザー詳細" : "不明");
             return (
                 <React.Fragment key={index}>
                     <BreadcrumbList>
